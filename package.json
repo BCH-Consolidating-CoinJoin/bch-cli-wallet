@@ -1,12 +1,12 @@
 {
-  "name": "mynewcli",
-  "description": "asdf",
-  "version": "0.0.0",
+  "name": "bch-cli-wallet",
+  "description": "A command line wallet for Bitcoin Cash, built with BITBOX",
+  "version": "1.0.0",
   "author": "Chris Troutner @christroutner",
   "bin": {
     "mynewcli": "./bin/run"
   },
-  "bugs": "https://github.com/christroutner/mynewcli/issues",
+  "bugs": "https://github.com/christroutner/bch-cli-wallet/issues",
   "dependencies": {
     "@oclif/command": "^1.5.4",
     "@oclif/config": "^1.8.8",
@@ -31,7 +31,7 @@
     "/oclif.manifest.json",
     "/src"
   ],
-  "homepage": "https://github.com/christroutner/mynewcli",
+  "homepage": "https://github.com/christroutner/bch-cli-wallet",
   "keywords": [
     "oclif"
   ],
@@ -39,12 +39,12 @@
   "main": "src/index.js",
   "oclif": {
     "commands": "./src/commands",
-    "bin": "mynewcli",
+    "bin": "bch-cli-wallet",
     "plugins": [
       "@oclif/plugin-help"
     ]
   },
-  "repository": "christroutner/mynewcli",
+  "repository": "christroutner/bch-cli-wallet",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint .",
