@@ -52,7 +52,6 @@
   "repository": "christroutner/bch-cli-wallet",
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint .",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
