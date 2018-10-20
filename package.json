@@ -55,6 +55,7 @@
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "nyc --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage:report": "nyc --reporter=html mocha",
     "version": "oclif-dev readme && git add README.md"
   }
 }
