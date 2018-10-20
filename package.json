@@ -1,7 +1,7 @@
 {
   "name": "bch-cli-wallet",
   "description": "A command line wallet for Bitcoin Cash, built with BITBOX",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Chris Troutner @christroutner",
   "bin": {
     "mynewcli": "./bin/run"
@@ -25,7 +25,8 @@
     "eslint-plugin-prettier": "^3.0.0",
     "globby": "^8.0.1",
     "mocha": "^5.2.0",
-    "nyc": "^13.1.0"
+    "nyc": "^13.1.0",
+    "semantic-release": "^15.10.5"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -56,6 +57,7 @@
     "test": "nyc --reporter=text mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "coverage:report": "nyc --reporter=html mocha",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "semantic-release": "semantic-release"
   }
 }
