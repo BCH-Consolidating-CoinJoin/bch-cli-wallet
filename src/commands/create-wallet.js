@@ -2,10 +2,6 @@
 
 const fs = require("fs")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
-// const BITBOX = new BB({ restURL: `https://trest.bitcoin.com/v1/` })
-// const BITBOX = new BB({ restURL: `http://localhost:3000/v1/` })
-// const BITBOX = new BB({ restURL: `http://decatur.hopto.org:3003/v1/` })
-// const BITBOX = new BB({ restURL: `http://192.168.0.13:3003/v1/` })
 
 const { Command, flags } = require("@oclif/command")
 
@@ -35,7 +31,10 @@ async function createWallet(testnet, name) {
   if (testnet) var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
   else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+  // Initialize the wallet data object that will be saved to a file.
   const walletData = {}
+  if (testnet) walletData.network = "testnet"
+  else walletData.network = "mainnet"
 
   // create 256 bit BIP39 mnemonic
   const mnemonic = BITBOX.Mnemonic.generate(
@@ -60,6 +59,11 @@ async function createWallet(testnet, name) {
   // get the cash address
   walletData.address = BITBOX.HDNode.toCashAddress(change)
 
+  // Initialize other data.
+  walletData.balance = 0
+  walletData.addressUsed = []
+  walletData.hasBalance = []
+
   // Write out the basic information into a json file for other apps to use.
   fs.writeFile(
     `./wallets/${name}.json`,
@@ -70,7 +74,7 @@ async function createWallet(testnet, name) {
     }
   )
 
-  console.log(`mnemonic: ${mnemonic}`)
+  //console.log(`mnemonic: ${mnemonic}`)
 }
 
 module.exports = CreateWallet
