@@ -27,32 +27,47 @@ line interface for this project is built with [oclif](https://oclif.io).
 <!-- tocstop -->
 # Usage
 <!-- usage -->
-Ignore this section for now.
-
 ```sh-session
-$ npm install -g mynewcli
-$ mynewcli COMMAND
+$ npm install -g bch-cli-wallet
+$ bch-cli-wallet COMMAND
 running command...
-$ mynewcli (-v|--version|version)
-mynewcli/0.0.0 linux-x64 node-v10.11.0
-$ mynewcli --help [COMMAND]
+$ bch-cli-wallet (-v|--version|version)
+bch-cli-wallet/1.0.0 linux-x64 node-v10.11.0
+$ bch-cli-wallet --help [COMMAND]
 USAGE
-  $ mynewcli COMMAND
+  $ bch-cli-wallet COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`mynewcli hello`](#mynewcli-hello)
-* [`mynewcli help [COMMAND]`](#mynewcli-help-command)
+* [`bch-cli-wallet create-wallet`](#bch-cli-wallet-create-wallet)
+* [`bch-cli-wallet hello`](#bch-cli-wallet-hello)
+* [`bch-cli-wallet help [COMMAND]`](#bch-cli-wallet-help-command)
+* [`bch-cli-wallet list-wallets`](#bch-cli-wallet-list-wallets)
 
-## `mynewcli hello`
+## `bch-cli-wallet create-wallet`
+
+Generate a new HD Wallet.
+
+```
+USAGE
+  $ bch-cli-wallet create-wallet
+
+OPTIONS
+  -n, --name=name  Name of wallet
+  -t, --testnet    Create a testnet wallet
+```
+
+_See code: [src/commands/create-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.0/src/commands/create-wallet.js)_
+
+## `bch-cli-wallet hello`
 
 Describe the command here
 
 ```
 USAGE
-  $ mynewcli hello
+  $ bch-cli-wallet hello
 
 OPTIONS
   -n, --name=name  name to print
@@ -62,15 +77,15 @@ DESCRIPTION
   Extra documentation goes here
 ```
 
-_See code: [src/commands/hello.js](https://github.com/christroutner/mynewcli/blob/v0.0.0/src/commands/hello.js)_
+_See code: [src/commands/hello.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.0/src/commands/hello.js)_
 
-## `mynewcli help [COMMAND]`
+## `bch-cli-wallet help [COMMAND]`
 
-display help for mynewcli
+display help for bch-cli-wallet
 
 ```
 USAGE
-  $ mynewcli help [COMMAND]
+  $ bch-cli-wallet help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for
@@ -80,4 +95,15 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
+
+## `bch-cli-wallet list-wallets`
+
+List existing wallets.
+
+```
+USAGE
+  $ bch-cli-wallet list-wallets
+```
+
+_See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.0/src/commands/list-wallets.js)_
 <!-- commandsstop -->
