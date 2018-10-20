@@ -3,6 +3,10 @@ bch-cli-wallet
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/christroutner/bch-cli-wallet.svg)](https://greenkeeper.io/)
 
+[![Build Status](https://travis-ci.org/christroutner/bch-cli-wallet.svg?branch=master)](https://travis-ci.org/christroutner/bch-cli-wallet)
+
+[![Coverage Status](https://coveralls.io/repos/github/christroutner/bch-cli-wallet/badge.svg?branch=unstable)](https://coveralls.io/github/christroutner/bch-cli-wallet?branch=unstable)
+
 This is a prototype Bitcoin Cash (BCH) wallet that runs on the command line. This
 project has the following goals:
 - Create a code base for a wallet that is easily forkable and extensible by JavaScript developers.
