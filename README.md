@@ -1,6 +1,8 @@
 bch-cli-wallet
 ========
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/christroutner/bch-cli-wallet.svg)](https://greenkeeper.io/)
+
 This is a prototype Bitcoin Cash (BCH) wallet that runs on the command line. This
 project has the following goals:
 - Create a code base for a wallet that is easily forkable and extensible by JavaScript developers.
