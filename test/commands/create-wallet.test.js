@@ -1,18 +1,48 @@
 "use strict"
 
-const { expect, test } = require("@oclif/test")
+//const { expect, test } = require("@oclif/test")
 const assert = require("chai").assert
+const CreateWallet = require("../../src/commands/create-wallet")
+const bitboxMock = require("../mocks/bitbox")
+
+// Inspect utility used for debugging.
+const util = require("util")
+util.inspect.defaultOptions = {
+  showHidden: true,
+  colors: true,
+  depth: 1
+}
 
 describe("create-wallet", () => {
-  it("should return message if called without name argument.", () => {
+  let BITBOX
+
+  beforeEach(() => {
+    BITBOX = bitboxMock
+  })
+
+  it("should exit with error status if called without name argument.", () => {
     try {
-      const msg = test.stdout().command(["create-wallet"])
-      console.log(`msg: ${JSON.stringify(msg, null, 2)}`)
+      const createWallet = new CreateWallet()
+      createWallet.createWallet(undefined, undefined, BITBOX)
     } catch (err) {
-      console.err(`Error expected: `, err)
-      assert.equal(true, true)
+      //console.error(`Error expected: ${util.inspect(err)}`)
+
+      assert.equal(err.code, "EEXIT", "Should exit as expected.")
     }
   })
+
+  it("should create a mainnet wallet file with the given name", () => {
+    try {
+      const createWallet = new CreateWallet()
+      createWallet.createWallet(undefined, "test123", BITBOX)
+      assert.equal(true, true)
+    } catch (err) {
+      console.error(`Error unexpected: ${util.inspect(err)}`)
+
+      //assert.equal(err.code, "EEXIT", "Should exit as expected.")
+    }
+  })
+
   /*
   test
     .stdout()
