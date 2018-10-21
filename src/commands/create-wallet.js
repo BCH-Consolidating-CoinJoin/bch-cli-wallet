@@ -69,7 +69,8 @@ class CreateWallet extends Command {
         }
       )
     } catch (err) {
-      console.log(`Error in createWallet: `, err)
+      if (err.code !== "EEXIT") console.log(`Error in createWallet().`)
+      throw err
     }
   }
 }

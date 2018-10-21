@@ -31,6 +31,7 @@ describe("create-wallet", () => {
     }
   })
 
+  /*
   it("should create a mainnet wallet file with the given name", () => {
     try {
       const createWallet = new CreateWallet()
@@ -42,6 +43,7 @@ describe("create-wallet", () => {
       //assert.equal(err.code, "EEXIT", "Should exit as expected.")
     }
   })
+*/
 
   /*
   test
