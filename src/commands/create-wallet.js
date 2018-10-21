@@ -17,7 +17,7 @@ class CreateWallet extends Command {
     this.createWallet(flags.testnet, flags.name, BITBOX)
   }
 
-  createWallet(testnet, name, BITBOX) {
+  async createWallet(testnet, name, BITBOX) {
     try {
       // Exit if a name is not supplied.
       if (!name || name === "") {
@@ -60,20 +60,29 @@ class CreateWallet extends Command {
       walletData.hasBalance = []
 
       // Write out the basic information into a json file for other apps to use.
-      fs.writeFile(
-        `./wallets/${name}.json`,
-        JSON.stringify(walletData, null, 2),
-        function(err) {
-          if (err) return console.error(err)
-          console.log(`${name}.json written successfully.`)
-        }
-      )
+      await this.saveWallet(name, walletData)
 
       return walletData
     } catch (err) {
       if (err.code !== "EEXIT") console.log(`Error in createWallet().`)
       throw err
     }
+  }
+
+  // Wrap the file save stuff in a Promise.
+  saveWallet(name, walletData) {
+    return new Promise((resolve, reject) => {
+      fs.writeFile(
+        `./wallets/${name}.json`,
+        JSON.stringify(walletData, null, 2),
+        function(err) {
+          if (err) return reject(console.error(err))
+
+          console.log(`${name}.json written successfully.`)
+          return resolve()
+        }
+      )
+    })
   }
 }
 
