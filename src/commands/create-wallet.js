@@ -52,7 +52,7 @@ class CreateWallet extends Command {
       const change = BITBOX.HDNode.derivePath(account, "0/0")
 
       // get the cash address
-      //walletData.address = BITBOX.HDNode.toCashAddress(change)
+      walletData.rootAddress = BITBOX.HDNode.toCashAddress(change)
 
       // Initialize other data.
       walletData.balance = 0
