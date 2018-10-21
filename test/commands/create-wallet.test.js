@@ -53,13 +53,10 @@ describe("create-wallet", () => {
       "network",
       "mnemonic",
       "balance",
-      "addressUsed",
+      "nextAddress",
       "hasBalance",
       "rootAddress"
     ])
-
-    // addressUsed is an array of BIP44 address indicies that have been used.
-    assert.isArray(walletData.addressUsed)
 
     // hasBalance is an array of objects. Each object represents an address with
     // a balance.
@@ -87,13 +84,10 @@ describe("create-wallet", () => {
       "network",
       "mnemonic",
       "balance",
-      "addressUsed",
+      "nextAddress",
       "hasBalance",
       "rootAddress"
     ])
-
-    // addressUsed is an array of BIP44 address indicies that have been used.
-    assert.isArray(walletData.addressUsed)
 
     // hasBalance is an array of objects. Each object represents an address with
     // a balance.
