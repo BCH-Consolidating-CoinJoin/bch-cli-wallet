@@ -56,7 +56,7 @@ class CreateWallet extends Command {
 
       // Initialize other data.
       walletData.balance = 0
-      walletData.nextAddress = 0
+      walletData.nextAddress = 1
       walletData.hasBalance = []
 
       // Write out the basic information into a json file for other apps to use.
