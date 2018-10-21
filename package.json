@@ -26,7 +26,8 @@
     "globby": "^8.0.1",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
-    "semantic-release": "^15.10.5"
+    "semantic-release": "^15.10.5",
+    "sinon": "^7.0.0"
   },
   "engines": {
     "node": ">=8.0.0"
