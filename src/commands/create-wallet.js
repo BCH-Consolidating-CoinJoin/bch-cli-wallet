@@ -52,7 +52,7 @@ class CreateWallet extends Command {
       const change = BITBOX.HDNode.derivePath(account, "0/0")
 
       // get the cash address
-      walletData.address = BITBOX.HDNode.toCashAddress(change)
+      //walletData.address = BITBOX.HDNode.toCashAddress(change)
 
       // Initialize other data.
       walletData.balance = 0
@@ -68,6 +68,8 @@ class CreateWallet extends Command {
           console.log(`${name}.json written successfully.`)
         }
       )
+
+      return walletData
     } catch (err) {
       if (err.code !== "EEXIT") console.log(`Error in createWallet().`)
       throw err

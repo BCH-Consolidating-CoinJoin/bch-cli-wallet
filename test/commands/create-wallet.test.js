@@ -3,7 +3,8 @@
 //const { expect, test } = require("@oclif/test")
 const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
-const bitboxMock = require("../mocks/bitbox")
+const { bitboxMock } = require("../mocks/bitbox")
+const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 
 // Inspect utility used for debugging.
 const util = require("util")
@@ -13,10 +14,14 @@ util.inspect.defaultOptions = {
   depth: 1
 }
 
+// Set default environment variables for unit tests.
+if (!process.env.TEST) process.env.TEST = "unit"
+
 describe("create-wallet", () => {
   let BITBOX
 
   beforeEach(() => {
+    // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
   })
 
@@ -31,19 +36,23 @@ describe("create-wallet", () => {
     }
   })
 
-  /*
   it("should create a mainnet wallet file with the given name", () => {
-    try {
-      const createWallet = new CreateWallet()
-      createWallet.createWallet(undefined, "test123", BITBOX)
-      assert.equal(true, true)
-    } catch (err) {
-      console.error(`Error unexpected: ${util.inspect(err)}`)
+    // Use the real library if this is not a unit test.
+    if (process.env.TEST !== "unit")
+      BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      //assert.equal(err.code, "EEXIT", "Should exit as expected.")
-    }
+    const createWallet = new CreateWallet()
+    const walletData = createWallet.createWallet(undefined, "test123", BITBOX)
+
+    assert.equal(walletData.network, "mainnet")
+    assert.hasAllKeys(walletData, [
+      "network",
+      "mnemonic",
+      "balance",
+      "addressUsed",
+      "hasBalance"
+    ])
   })
-*/
 
   /*
   test
