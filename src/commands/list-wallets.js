@@ -24,6 +24,7 @@ ListWallets.flags = {
 
 function listWallets() {
   const fileList = shelljs.ls("wallets/*.json")
+  //console.log(`fileList: ${JSON.stringify(fileList, null, 2)}`)
 
   if (fileList.length === 0) {
     console.log(`No wallets found.`)
