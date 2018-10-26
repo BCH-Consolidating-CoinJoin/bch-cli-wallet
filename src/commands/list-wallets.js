@@ -4,6 +4,7 @@
 //const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 
 const shelljs = require("shelljs")
+const Table = require("cli-table")
 
 const { Command, flags } = require("@oclif/command")
 
@@ -31,6 +32,11 @@ function listWallets() {
     return
   }
 
+  var table = new Table({
+    head: ["Name", "Network", "Balance (BCH)"],
+    colWidths: [15, 15, 15]
+  })
+
   // Loop through each wallet returned.
   for (let i = 0; i < fileList.length; i++) {
     const thisFile = fileList[i]
@@ -38,8 +44,10 @@ function listWallets() {
     const lastPart = thisFile.indexOf(`.json`)
     const name = thisFile.slice(8, lastPart)
 
-    console.log(`name: ${name}`)
+    table.push([name, "mainnet", 0.123])
   }
+
+  console.log(table.toString())
 }
 
 module.exports = ListWallets
