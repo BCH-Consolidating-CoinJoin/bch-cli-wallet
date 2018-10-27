@@ -28,7 +28,7 @@ describe("create-wallet", () => {
   it("should exit with error status if called without name argument.", async () => {
     try {
       const createWallet = new CreateWallet()
-      await createWallet.createWallet(undefined, undefined, BITBOX)
+      await createWallet.createWallet(undefined, BITBOX, undefined)
     } catch (err) {
       //console.error(`Error expected: ${util.inspect(err)}`)
 
@@ -43,9 +43,9 @@ describe("create-wallet", () => {
 
     const createWallet = new CreateWallet()
     const walletData = await createWallet.createWallet(
-      undefined,
       "test123",
-      BITBOX
+      BITBOX,
+      undefined
     )
 
     assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
@@ -53,13 +53,41 @@ describe("create-wallet", () => {
       "network",
       "mnemonic",
       "balance",
-      "addressUsed",
+      "nextAddress",
       "hasBalance",
       "rootAddress"
     ])
 
-    // addressUsed is an array of BIP44 address indicies that have been used.
-    assert.isArray(walletData.addressUsed)
+    // hasBalance is an array of objects. Each object represents an address with
+    // a balance.
+    assert.isArray(walletData.hasBalance)
+
+    // For an integration test, ensure the rootAddress actually reflects mainnet.
+    if (process.env.TEST !== "unit")
+      assert.equal(walletData.rootAddress.indexOf("bitcoincash") > -1, true)
+  })
+
+  it("should create a mainnet wallet file when mainnet is specified", async () => {
+    // Use the real library if this is not a unit test.
+    if (process.env.TEST !== "unit")
+      BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+
+    const createWallet = new CreateWallet()
+    const walletData = await createWallet.createWallet(
+      "test123",
+      BITBOX,
+      "mainnet"
+    )
+
+    assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
+    assert.hasAllKeys(walletData, [
+      "network",
+      "mnemonic",
+      "balance",
+      "nextAddress",
+      "hasBalance",
+      "rootAddress"
+    ])
 
     // hasBalance is an array of objects. Each object represents an address with
     // a balance.
@@ -77,23 +105,20 @@ describe("create-wallet", () => {
 
     const createWallet = new CreateWallet()
     const walletData = await createWallet.createWallet(
-      "testnet",
       "test123",
-      BITBOX
+      BITBOX,
+      "testnet"
     )
 
-    assert.equal(walletData.network, "testnet", "Expecting mainnet address")
+    assert.equal(walletData.network, "testnet", "Expecting testnet address")
     assert.hasAllKeys(walletData, [
       "network",
       "mnemonic",
       "balance",
-      "addressUsed",
+      "nextAddress",
       "hasBalance",
       "rootAddress"
     ])
-
-    // addressUsed is an array of BIP44 address indicies that have been used.
-    assert.isArray(walletData.addressUsed)
 
     // hasBalance is an array of objects. Each object represents an address with
     // a balance.
