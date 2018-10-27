@@ -3,6 +3,7 @@
 //const { expect, test } = require("@oclif/test")
 const assert = require("chai").assert
 const CreateWallet = require("../../src/commands/create-wallet")
+const ListWallets = require("../../src/commands/list-wallets")
 const { bitboxMock } = require("../mocks/bitbox")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 
@@ -25,78 +26,41 @@ describe("list-wallets", () => {
     BITBOX = bitboxMock
   })
 
-  /*
-  it("should exit with error status if called without name argument.", async () => {
-    try {
-      const createWallet = new CreateWallet()
-      await createWallet.createWallet(undefined, undefined, BITBOX)
-    } catch (err) {
-      //console.error(`Error expected: ${util.inspect(err)}`)
-
-      assert.equal(err.code, "EEXIT", "Should exit as expected.")
-    }
-  })
-
-  it("should create a mainnet wallet file with the given name", async () => {
+  it("should correctly identify a mainnet wallet", async () => {
     // Use the real library if this is not a unit test.
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+    // Create a mainnet wallet.
     const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(
-      undefined,
-      "test123",
-      BITBOX
-    )
+    await createWallet.createWallet("test123", BITBOX, "mainnet")
 
-    assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
-    assert.hasAllKeys(walletData, [
-      "network",
-      "mnemonic",
-      "balance",
-      "nextAddress",
-      "hasBalance",
-      "rootAddress"
-    ])
+    const listWallets = new ListWallets()
+    const data = listWallets.parseWallets()
 
-    // hasBalance is an array of objects. Each object represents an address with
-    // a balance.
-    assert.isArray(walletData.hasBalance)
+    // Find the wallet that was just created.
+    const testWallet = data.find(wallet => wallet[0] === "test123")
 
-    // For an integration test, ensure the rootAddress actually reflects mainnet.
-    if (process.env.TEST !== "unit")
-      assert.equal(walletData.rootAddress.indexOf("bitcoincash") > -1java -Xmx1024M -Xms1024M -jar minecraft_server.1.13.2.jar nogui, true)
+    const network = testWallet[1]
+    assert.equal(network, "mainnet", "Correct network detected.")
   })
 
-  it("should create a testnet wallet file with the given name", async () => {
+  it("should correctly identify a testnet wallet", async () => {
     // Use the real library if this is not a unit test.
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
+    // Create a testnet wallet
     const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(
-      "testnet",
-      "test123",
-      BITBOX
-    )
+    await createWallet.createWallet("test123", BITBOX, "testnet")
 
-    assert.equal(walletData.network, "testnet", "Expecting mainnet address")
-    assert.hasAllKeys(walletData, [
-      "network",
-      "mnemonic",
-      "balance",
-      "nextAddress",
-      "hasBalance",
-      "rootAddress"
-    ])
+    const listWallets = new ListWallets()
+    const data = listWallets.parseWallets()
 
-    // hasBalance is an array of objects. Each object represents an address with
-    // a balance.
-    assert.isArray(walletData.hasBalance)
+    // Find the wallet that was just created.
+    const testWallet = data.find(wallet => wallet[0] === "test123")
 
-    // For an integration test, ensure the rootAddress actually reflects mainnet.
-    if (process.env.TEST !== "unit")
-      assert.equal(walletData.rootAddress.indexOf("bchtest") > -1, true)
+    const network = testWallet[1]
+    assert.equal(network, "testnet", "Correct network detected.")
   })
-  */
 })

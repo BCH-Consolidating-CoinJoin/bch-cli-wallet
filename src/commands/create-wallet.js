@@ -17,7 +17,7 @@ class CreateWallet extends Command {
     this.createWallet(flags.testnet, flags.name, BITBOX)
   }
 
-  async createWallet(testnet, name, BITBOX) {
+  async createWallet(name, BITBOX, testnet) {
     try {
       // Exit if a name is not supplied.
       if (!name || name === "") {
@@ -27,7 +27,7 @@ class CreateWallet extends Command {
 
       // Initialize the wallet data object that will be saved to a file.
       const walletData = {}
-      if (testnet) walletData.network = "testnet"
+      if (testnet === "testnet") walletData.network = "testnet"
       else walletData.network = "mainnet"
 
       // create 256 bit BIP39 mnemonic
@@ -41,7 +41,7 @@ class CreateWallet extends Command {
       const rootSeed = BITBOX.Mnemonic.toSeed(mnemonic)
 
       // master HDNode
-      if (testnet)
+      if (testnet === "testnet")
         var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
       else var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 
