@@ -54,7 +54,7 @@ class ListWallets extends Command {
     return retData
   }
 
-  // Display table in a table on the command line.
+  // Display table in a table on the command line using cli-table.
   displayTable(data) {
     var table = new Table({
       head: ["Name", "Network", "Balance (BCH)"],

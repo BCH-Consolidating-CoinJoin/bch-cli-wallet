@@ -42,7 +42,9 @@ describe("list-wallets", () => {
     const testWallet = data.find(wallet => wallet[0] === "test123")
 
     const network = testWallet[1]
+    const balance = testWallet[2]
     assert.equal(network, "mainnet", "Correct network detected.")
+    assert.equal(balance, 0, "Should have a zero balance")
   })
 
   it("should correctly identify a testnet wallet", async () => {
@@ -61,6 +63,8 @@ describe("list-wallets", () => {
     const testWallet = data.find(wallet => wallet[0] === "test123")
 
     const network = testWallet[1]
+    const balance = testWallet[2]
     assert.equal(network, "testnet", "Correct network detected.")
+    assert.equal(balance, 0, "Should have a zero balance")
   })
 })
