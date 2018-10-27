@@ -44,7 +44,9 @@ function listWallets() {
     const lastPart = thisFile.indexOf(`.json`)
     const name = thisFile.slice(8, lastPart)
 
-    table.push([name, "mainnet", 0.123])
+    const walletInfo = require(`../../${thisFile}`)
+
+    table.push([name, walletInfo.network, walletInfo.balance])
   }
 
   console.log(table.toString())
