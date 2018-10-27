@@ -48,7 +48,7 @@ describe("list-wallets", () => {
   })
 
   it("should correctly identify a testnet wallet", async () => {
-    // Use the real library if this is not a unit test.
+    // Use the real library if this is not a unit test
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
