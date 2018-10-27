@@ -43,12 +43,12 @@ class ListWallets extends Command {
       const lastPart = thisFile.indexOf(`.json`)
       const name = thisFile.slice(8, lastPart)
 
+      // Delete the cached copy of the wallet. This allows testing of list-wallets.
+      delete require.cache[require.resolve(`../../${thisFile}`)]
+
       const walletInfo = require(`../../${thisFile}`)
 
       retData.push([name, walletInfo.network, walletInfo.balance])
-
-      // Delete the cached copy of the wallet. This allows testing of list-wallets.
-      delete require.cache[require.resolve(`../../${thisFile}`)]
     }
 
     return retData

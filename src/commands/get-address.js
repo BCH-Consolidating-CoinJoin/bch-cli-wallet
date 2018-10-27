@@ -19,7 +19,11 @@ class GetAddress extends Command {
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      await this.getAddress(flags.name, BITBOX)
+      const newAddress = await this.getAddress(flags.name, BITBOX)
+
+      // Display the address to the user.
+      this.log(`${newAddress}`)
+      //this.log(`legacy address: ${legacy}`)
     } catch (err) {
       if (err.message) console.log(err.message)
       else console.log(`Error in GetAddress.run: `, err)
@@ -50,6 +54,7 @@ class GetAddress extends Command {
       account,
       `0/${walletInfo.nextAddress}`
     )
+
     // Increment to point to a new address for next time.
     walletInfo.nextAddress++
 
@@ -69,9 +74,7 @@ class GetAddress extends Command {
     const newAddress = BITBOX.HDNode.toCashAddress(change)
     const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
-    // Display the address to the user.
-    this.log(`${newAddress}`)
-    this.log(`legacy address: ${legacy}`)
+    return newAddress
   }
 
   // Open a wallet by file name.

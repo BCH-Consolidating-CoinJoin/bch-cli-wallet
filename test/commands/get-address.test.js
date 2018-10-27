@@ -53,4 +53,39 @@ describe("get-address", () => {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
   })
+
+  it("increments the nextAddress property of the wallet.", async () => {
+    // Use the real library if this is not a unit test
+    if (process.env.TEST !== "unit")
+      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+
+    // Create a testnet wallet
+    const createWallet = new CreateWallet()
+    const initialWalletInfo = await createWallet.createWallet(
+      "test123",
+      BITBOX,
+      "testnet"
+    )
+    console.log(`initialWalletInfo: ${util.inspect(initialWalletInfo)}`)
+
+    // Record the initial nextAddress property. This is going to be 1 for a new wallet.
+    const firstAddressIndex = initialWalletInfo.nextAddress
+
+    // Generate a new address
+    const getAddress = new GetAddress()
+    const newAddress = await getAddress.getAddress(`test123`, BITBOX)
+
+    // Delete the cached copy of the wallet. This allows testing of list-wallets.
+    delete require.cache[require.resolve(`../../wallets/test123`)]
+
+    // Read in the wallet file.
+    const walletInfo = require(`../../wallets/test123`)
+    console.log(`walletInfo: ${util.inspect(walletInfo)}`)
+
+    assert.equal(
+      walletInfo.nextAddress,
+      firstAddressIndex + 1,
+      "nextAddress property should increment"
+    )
+  })
 })
