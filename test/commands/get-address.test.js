@@ -73,7 +73,7 @@ describe("get-address", () => {
 
     // Generate a new address
     const getAddress = new GetAddress()
-    const newAddress = await getAddress.getAddress(`test123`, BITBOX)
+    await getAddress.getAddress(`test123`, BITBOX)
 
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
     delete require.cache[require.resolve(`../../wallets/test123`)]
