@@ -11,22 +11,29 @@ const { Command, flags } = require("@oclif/command")
 
 class GetAddress extends Command {
   async run() {
-    const { flags } = this.parse(GetAddress)
+    try {
+      const { flags } = this.parse(GetAddress)
 
-    // Determine if this is a testnet wallet or a mainnet wallet.
-    if (flags.testnet)
-      var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-    else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+      // Determine if this is a testnet wallet or a mainnet wallet.
+      if (flags.testnet)
+        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-    await this.getAddress(flags.name, BITBOX)
+      const newAddress = await this.getAddress(flags.name, BITBOX)
+
+      // Display the address to the user.
+      this.log(`${newAddress}`)
+      //this.log(`legacy address: ${legacy}`)
+    } catch (err) {
+      if (err.message) console.log(err.message)
+      else console.log(`Error in GetAddress.run: `, err)
+    }
   }
 
   async getAddress(name, BITBOX) {
     // Exit if wallet not specified.
-    if (!name || name === "") {
-      this.log(`You must specify a wallet with the -n flag.`)
-      this.exit(0)
-    }
+    if (!name || name === "")
+      throw new Error(`You must specify a wallet with the -n flag.`)
 
     const walletInfo = this.openWallet(name)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
@@ -47,8 +54,18 @@ class GetAddress extends Command {
       account,
       `0/${walletInfo.nextAddress}`
     )
+
     // Increment to point to a new address for next time.
     walletInfo.nextAddress++
+
+    // Throw up a warning message when more than 100 addresses have been generated.
+    if (walletInfo.nextAddress > 100) {
+      console.log(`
+        Over 100 addresses have been generated with this wallet. You should
+        consider consolidating this wallet into a new one, to reduce processing
+        time in tracking all the addresses.
+      `)
+    }
 
     // Update the wallet file.
     await this.saveWallet(name, walletInfo)
@@ -57,9 +74,7 @@ class GetAddress extends Command {
     const newAddress = BITBOX.HDNode.toCashAddress(change)
     const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
-    // Display the address to the user.
-    this.log(`${newAddress}`)
-    this.log(`legacy address: ${legacy}`)
+    return newAddress
   }
 
   // Open a wallet by file name.
@@ -68,8 +83,7 @@ class GetAddress extends Command {
       const walletInfo = require(`../../wallets/${name}.json`)
       return walletInfo
     } catch (err) {
-      this.log(`Could not open ${name}.json`)
-      this.exit(1)
+      throw new Error(`Could not open ${name}.json`)
     }
   }
 

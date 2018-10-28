@@ -22,7 +22,8 @@ const bitboxMock = {
   HDNode: {
     fromSeed: sinon.stub().returns({}),
     derivePath: sinon.stub().returns({}),
-    toCashAddress: sinon.stub().returns({})
+    toCashAddress: sinon.stub().returns({}),
+    toLegacyAddress: sinon.stub().returns({})
   }
 }
 
