@@ -66,7 +66,7 @@ describe("get-address", () => {
       BITBOX,
       "testnet"
     )
-    console.log(`initialWalletInfo: ${util.inspect(initialWalletInfo)}`)
+    //console.log(`initialWalletInfo: ${util.inspect(initialWalletInfo)}`)
 
     // Record the initial nextAddress property. This is going to be 1 for a new wallet.
     const firstAddressIndex = initialWalletInfo.nextAddress
@@ -80,7 +80,7 @@ describe("get-address", () => {
 
     // Read in the wallet file.
     const walletInfo = require(`../../wallets/test123`)
-    console.log(`walletInfo: ${util.inspect(walletInfo)}`)
+    //console.log(`walletInfo: ${util.inspect(walletInfo)}`)
 
     assert.equal(
       walletInfo.nextAddress,
