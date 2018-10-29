@@ -1,8 +1,5 @@
 /*
   TODO:
-  -Returns error if name is not provided.
-  -Returns error if wallet does not exist.
-  -Increments the nextAddress property of the wallet.
 */
 
 "use strict"

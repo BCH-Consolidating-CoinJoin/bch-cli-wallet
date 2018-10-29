@@ -4,8 +4,8 @@
 
 "use strict"
 
-const fs = require("fs")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const appUtil = require("../util")
 
 const { Command, flags } = require("@oclif/command")
 
@@ -35,7 +35,7 @@ class GetAddress extends Command {
     if (!name || name === "")
       throw new Error(`You must specify a wallet with the -n flag.`)
 
-    const walletInfo = this.openWallet(name)
+    const walletInfo = appUtil.openWallet(name)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     // root seed buffer
@@ -68,39 +68,13 @@ class GetAddress extends Command {
     }
 
     // Update the wallet file.
-    await this.saveWallet(name, walletInfo)
+    await appUtil.saveWallet(name, walletInfo)
 
     // get the cash address
     const newAddress = BITBOX.HDNode.toCashAddress(change)
     const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
     return newAddress
-  }
-
-  // Open a wallet by file name.
-  openWallet(name) {
-    try {
-      const walletInfo = require(`../../wallets/${name}.json`)
-      return walletInfo
-    } catch (err) {
-      throw new Error(`Could not open ${name}.json`)
-    }
-  }
-
-  // Wrap the file save stuff in a Promise.
-  saveWallet(name, walletData) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(
-        `./wallets/${name}.json`,
-        JSON.stringify(walletData, null, 2),
-        function(err) {
-          if (err) return reject(console.error(err))
-
-          //console.log(`${name}.json written successfully.`)
-          return resolve()
-        }
-      )
-    })
   }
 }
 
