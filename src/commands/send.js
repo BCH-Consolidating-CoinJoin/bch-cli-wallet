@@ -68,7 +68,7 @@ class Send extends Command {
       const changeAddress = await getAddress.getAddress(name, BITBOX)
       console.log(`changeAddress: ${changeAddress}`)
 
-      // Send the BCH, transfer change to the new address.
+      // Send the BCH, transfer change to the new address
       const txid = await this.sendBCH(
         utxo,
         bch,
