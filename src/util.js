@@ -9,7 +9,8 @@ const fs = require("fs")
 
 module.exports = {
   saveWallet,
-  openWallet
+  openWallet,
+  changeAddrFromMnemonic
 }
 
 // Wrap the file save stuff in a Promise.
@@ -39,4 +40,21 @@ function openWallet(name) {
   } catch (err) {
     throw new Error(`Could not open ${name}.json`)
   }
+}
+
+// Generate a change address from a Mnemonic of a private key.
+function changeAddrFromMnemonic(mnemonic, index, BITBOX) {
+  // root seed buffer
+  const rootSeed = BITBOX.Mnemonic.toSeed(mnemonic)
+
+  // master HDNode
+  const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
+
+  // HDNode of BIP44 account
+  const account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")
+
+  // derive the first external change address HDNode which is going to spend utxo
+  const change = BITBOX.HDNode.derivePath(account, `0/${index}`)
+
+  return change
 }
