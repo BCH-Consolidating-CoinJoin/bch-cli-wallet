@@ -7,14 +7,18 @@ const { Command, flags } = require("@oclif/command")
 
 class CreateWallet extends Command {
   async run() {
-    const { flags } = this.parse(CreateWallet)
+    try {
+      const { flags } = this.parse(CreateWallet)
 
-    // Determine if this is a testnet wallet or a mainnet wallet.
-    if (flags.testnet)
-      var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-    else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+      // Determine if this is a testnet wallet or a mainnet wallet.
+      if (flags.testnet === "testnet")
+        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-    this.createWallet(flags.testnet, flags.name, BITBOX)
+      this.createWallet(flags.name, BITBOX, flags.testnet)
+    } catch (err) {
+      console.log(`Error: `, err)
+    }
   }
 
   async createWallet(name, BITBOX, testnet) {
