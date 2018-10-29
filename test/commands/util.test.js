@@ -1,14 +1,11 @@
 /*
   TODO:
-  -Returns error if name is not provided.
-  -Returns error if wallet does not exist.
-
 */
 
 "use strict"
 
 const assert = require("chai").assert
-const UpdateBalances = require("../../src/commands/update-balances")
+const appUtil = require("../../src/util")
 const { bitboxMock } = require("../mocks/bitbox")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 
@@ -31,16 +28,11 @@ describe("update-balances", () => {
     BITBOX = bitboxMock
   })
 
-  it("should throw error if name is not supplied.", async () => {
+  it("should throw error if wallet file not found.", async () => {
     try {
-      const updateBalances = new UpdateBalances()
-      await updateBalances.validateFlags({})
+      await appUtil.openWallet("doesnotexist")
     } catch (err) {
-      assert.include(
-        err.message,
-        `You must specify a wallet with the -n flag`,
-        "Expected error message."
-      )
+      assert.include(err.message, `Could not open`, "Expected error message.")
     }
   })
 })

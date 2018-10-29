@@ -1,7 +1,7 @@
 "use strict"
 
-const fs = require("fs")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
+const appUtil = require("../util")
 
 const { Command, flags } = require("@oclif/command")
 
@@ -60,29 +60,13 @@ class CreateWallet extends Command {
       walletData.hasBalance = []
 
       // Write out the basic information into a json file for other apps to use.
-      await this.saveWallet(name, walletData)
+      await appUtil.saveWallet(name, walletData)
 
       return walletData
     } catch (err) {
       if (err.code !== "EEXIT") console.log(`Error in createWallet().`)
       throw err
     }
-  }
-
-  // Wrap the file save stuff in a Promise.
-  saveWallet(name, walletData) {
-    return new Promise((resolve, reject) => {
-      fs.writeFile(
-        `./wallets/${name}.json`,
-        JSON.stringify(walletData, null, 2),
-        function(err) {
-          if (err) return reject(console.error(err))
-
-          console.log(`${name}.json written successfully.`)
-          return resolve()
-        }
-      )
-    })
   }
 }
 
