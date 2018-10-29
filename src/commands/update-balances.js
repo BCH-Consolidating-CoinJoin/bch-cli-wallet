@@ -134,7 +134,8 @@ class UpdateBalances extends Command {
           balance: thisAddr.balance,
           balanceSat: thisAddr.balanceSat,
           unconfirmedBalance: thisAddr.unconfirmedBalance,
-          unconfirmedBalanceSat: thisAddr.unconfirmedBalanceSat
+          unconfirmedBalanceSat: thisAddr.unconfirmedBalanceSat,
+          cashAddress: thisAddr.cashAddress
         }
 
         hasBalance.push(thisObj)
