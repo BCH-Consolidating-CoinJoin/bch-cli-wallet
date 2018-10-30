@@ -7,16 +7,21 @@ const { Command, flags } = require("@oclif/command")
 
 class CreateWallet extends Command {
   async run() {
-    const { flags } = this.parse(CreateWallet)
+    try {
+      const { flags } = this.parse(CreateWallet)
 
-    // Determine if this is a testnet wallet or a mainnet wallet.
-    if (flags.testnet)
-      var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-    else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+      // Determine if this is a testnet wallet or a mainnet wallet.
+      if (flags.testnet)
+        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+      else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-    this.createWallet(flags.testnet, flags.name, BITBOX)
+      this.createWallet(flags.name, BITBOX, flags.testnet)
+    } catch (err) {
+      console.log(`Error: `, err)
+    }
   }
 
+  // testnet is a boolean.
   async createWallet(name, BITBOX, testnet) {
     try {
       // Exit if a name is not supplied.
@@ -27,7 +32,7 @@ class CreateWallet extends Command {
 
       // Initialize the wallet data object that will be saved to a file.
       const walletData = {}
-      if (testnet === "testnet") walletData.network = "testnet"
+      if (testnet) walletData.network = "testnet"
       else walletData.network = "mainnet"
 
       // create 256 bit BIP39 mnemonic
@@ -41,7 +46,7 @@ class CreateWallet extends Command {
       const rootSeed = BITBOX.Mnemonic.toSeed(mnemonic)
 
       // master HDNode
-      if (testnet === "testnet")
+      if (testnet)
         var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
       else var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 

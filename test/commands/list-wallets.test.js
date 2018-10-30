@@ -33,7 +33,7 @@ describe("list-wallets", () => {
 
     // Create a mainnet wallet.
     const createWallet = new CreateWallet()
-    await createWallet.createWallet("test123", BITBOX, "mainnet")
+    await createWallet.createWallet("test123", BITBOX, false)
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()
