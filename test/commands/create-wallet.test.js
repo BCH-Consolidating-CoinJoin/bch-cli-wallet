@@ -67,17 +67,13 @@ describe("create-wallet", () => {
       assert.equal(walletData.rootAddress.indexOf("bitcoincash") > -1, true)
   })
 
-  it("should create a mainnet wallet file when mainnet is specified", async () => {
+  it("should create a mainnet wallet file when testnet is false", async () => {
     // Use the real library if this is not a unit test.
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
     const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet(
-      "test123",
-      BITBOX,
-      "mainnet"
-    )
+    const walletData = await createWallet.createWallet("test123", BITBOX, false)
 
     assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
     assert.hasAllKeys(walletData, [

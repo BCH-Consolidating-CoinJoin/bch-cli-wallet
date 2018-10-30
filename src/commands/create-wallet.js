@@ -21,6 +21,7 @@ class CreateWallet extends Command {
     }
   }
 
+  // testnet is a boolean.
   async createWallet(name, BITBOX, testnet) {
     try {
       // Exit if a name is not supplied.
