@@ -153,4 +153,4 @@ OPTIONS
 ```
 
 _See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
-<!-- commandsstop -->
+<!-- commandsstop  -->
