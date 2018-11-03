@@ -153,4 +153,117 @@ OPTIONS
 ```
 
 _See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
+<!-- commandsstop -->
+* [`bch-cli-wallet create-wallet`](#bch-cli-wallet-create-wallet)
+* [`bch-cli-wallet get-address`](#bch-cli-wallet-get-address)
+* [`bch-cli-wallet hello`](#bch-cli-wallet-hello)
+* [`bch-cli-wallet help [COMMAND]`](#bch-cli-wallet-help-command)
+* [`bch-cli-wallet list-wallets`](#bch-cli-wallet-list-wallets)
+* [`bch-cli-wallet send`](#bch-cli-wallet-send)
+* [`bch-cli-wallet update-balances`](#bch-cli-wallet-update-balances)
+
+## `bch-cli-wallet create-wallet`
+
+Generate a new HD Wallet.
+
+```
+USAGE
+  $ bch-cli-wallet create-wallet
+
+OPTIONS
+  -n, --name=name  Name of wallet
+  -t, --testnet    Create a testnet wallet
+```
+
+_See code: [src/commands/create-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/create-wallet.js)_
+
+## `bch-cli-wallet get-address`
+
+Generate a new address to recieve BCH.
+
+```
+USAGE
+  $ bch-cli-wallet get-address
+
+OPTIONS
+  -n, --name=name  Name of wallet
+```
+
+_See code: [src/commands/get-address.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/get-address.js)_
+
+## `bch-cli-wallet hello`
+
+Describe the command here
+
+```
+USAGE
+  $ bch-cli-wallet hello
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src/commands/hello.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/hello.js)_
+
+## `bch-cli-wallet help [COMMAND]`
+
+display help for bch-cli-wallet
+
+```
+USAGE
+  $ bch-cli-wallet help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
+
+## `bch-cli-wallet list-wallets`
+
+List existing wallets.
+
+```
+USAGE
+  $ bch-cli-wallet list-wallets
+```
+
+_See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/list-wallets.js)_
+
+## `bch-cli-wallet send`
+
+Poll the network and update the balances of the wallet.
+
+```
+USAGE
+  $ bch-cli-wallet send
+
+OPTIONS
+  -a, --sendAddr=sendAddr  Cash address to send to
+  -b, --bch=bch            Quantity in BCH
+  -n, --name=name          Name of wallet
+```
+
+_See code: [src/commands/send.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send.js)_
+
+## `bch-cli-wallet update-balances`
+
+Poll the network and update the balances of the wallet.
+
+```
+USAGE
+  $ bch-cli-wallet update-balances
+
+OPTIONS
+  -n, --name=name  Name of wallet
+```
+
+_See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
 <!-- commandsstop  -->
