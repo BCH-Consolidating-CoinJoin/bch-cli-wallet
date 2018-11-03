@@ -98,7 +98,8 @@ const utxos = [
       height: 1265272,
       confirmations: 644,
       legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
+      hdIndex: 3
     },
     {
       txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
@@ -109,7 +110,8 @@ const utxos = [
       height: 1265272,
       confirmations: 733,
       legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
+      hdIndex: 2
     }
   ]
 ]
@@ -167,7 +169,8 @@ const bitboxMock = {
   },
   Address: {
     details: sinon.stub().returns(addressDetails),
-    utxo: sinon.stub().returns(utxos)
+    utxo: sinon.stub().returns(utxos),
+    toLegacyAddress: sinon.stub().returns({})
   },
   TransactionBuilder: mockTransactionBuilder,
   BitcoinCash: {

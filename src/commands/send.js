@@ -19,6 +19,7 @@
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const appUtil = require("../util")
 const GetAddress = require("./get-address")
+const UpdateBalances = require("./update-balances")
 
 // Used for debugging and error reporting.
 const util = require("util")
@@ -39,7 +40,7 @@ class Send extends Command {
       const sendToAddr = flags.sendAddr // The address to send to.
 
       // Open the wallet data file.
-      const walletInfo = appUtil.openWallet(name)
+      let walletInfo = appUtil.openWallet(name)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -48,6 +49,10 @@ class Send extends Command {
       if (walletInfo.network === "testnet")
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
+
+      // Update balances before sending.
+      const updateBalances = new UpdateBalances()
+      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
 
       // Get info on UTXOs controlled by this wallet.
       const utxos = await this.getUTXOs(walletInfo, BITBOX)
@@ -80,14 +85,17 @@ class Send extends Command {
 
       console.log(`TXID: ${txid}`)
     } catch (err) {
-      if (err.message) console.log(err.message)
-      else console.log(`Error in .run: `, err)
+      //if (err.message) console.log(err.message)
+      //else console.log(`Error in .run: `, err)
+      console.log(`Error in .run: `, err)
     }
   }
 
   // Sends BCH to
   async sendBCH(utxo, bch, changeAddress, sendToAddr, walletInfo, BITBOX) {
     try {
+      //console.log(`utxo: ${util.inspect(utxo)}`)
+
       // instance of transaction builder
       if (walletInfo.network === `testnet`)
         var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
@@ -116,9 +124,26 @@ class Send extends Command {
       // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
       const remainder = originalAmount - satoshisToSend - txFee
 
+      // Debugging.
+      /*
+      console.log(
+        `Sending original UTXO amount of ${originalAmount} satoshis from address ${changeAddress}`
+      )
+      console.log(
+        `Sending ${satoshisToSend} satoshis to recieving address ${sendToAddr}`
+      )
+      console.log(
+        `Sending remainder amount of ${remainder} satoshis to new address ${changeAddress}`
+      )
+      console.log(`Paying a transaction fee of ${txFee} satoshis`)
+      */
+
       // add output w/ address and amount to send
       transactionBuilder.addOutput(sendToAddr, satoshisToSend)
-      transactionBuilder.addOutput(changeAddress, remainder)
+      transactionBuilder.addOutput(
+        BITBOX.Address.toLegacyAddress(changeAddress),
+        remainder
+      )
 
       // Generate a keypair from the change address.
       const change = appUtil.changeAddrFromMnemonic(
@@ -164,18 +189,21 @@ class Send extends Command {
   selectUTXO(bch, utxos, BITBOX) {
     let candidateUTXO = {}
 
+    const bchSatoshis = bch * 100000000
+    const total = bchSatoshis + 250 // Add 250 satoshis to cover TX fee.
+
     // Loop through all the UTXOs.
     for (var i = 0; i < utxos.length; i++) {
       const thisUTXO = utxos[i]
       // The UTXO must be greater than or equal to the send amount.
-      if (thisUTXO.amount >= bch) {
+      if (thisUTXO.satoshis >= total) {
         // Automatically assign if the candidateUTXO is an empty object.
-        if (!candidateUTXO.amount) {
+        if (!candidateUTXO.satoshis) {
           candidateUTXO = thisUTXO
           continue
 
           // Replace the candidate if the current UTXO is closer to the send amount.
-        } else if (candidateUTXO.amount > thisUTXO.amount) {
+        } else if (candidateUTXO.satoshis > thisUTXO.satoshis) {
           candidateUTXO = thisUTXO
         }
       }
@@ -204,7 +232,7 @@ class Send extends Command {
           //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
 
           // Add the HD node index to the UTXO for use later.
-          //thisUTXO.hdIndex = walletInfo.hasBalance[i].index
+          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
 
           // Add the UTXO to the array if it has at least one confirmation.
           if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
