@@ -203,7 +203,7 @@ class Send extends Command {
           //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
 
           // Add the HD node index to the UTXO for use later.
-          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
+          //thisUTXO.hdIndex = walletInfo.hasBalance[i].index
 
           // Add the UTXO to the array if it has at least one confirmation.
           if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)

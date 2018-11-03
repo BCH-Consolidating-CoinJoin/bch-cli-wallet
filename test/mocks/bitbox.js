@@ -87,6 +87,22 @@ const addressDetails = [
   }
 ]
 
+const utxos = [
+  [
+    {
+      txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
+      vout: 1,
+      scriptPubKey: "76a9142b0379444f2e01905b2dd511644af4f53556edeb88ac",
+      amount: 0.06999752,
+      satoshis: 6999752,
+      height: 1265272,
+      confirmations: 644,
+      legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+    }
+  ]
+]
+
 const bitboxMock = {
   Mnemonic: {
     generate: sinon.stub().returns({}),
@@ -100,7 +116,8 @@ const bitboxMock = {
     toLegacyAddress: sinon.stub().returns({})
   },
   Address: {
-    details: sinon.stub().returns(addressDetails)
+    details: sinon.stub().returns(addressDetails),
+    utxo: sinon.stub().returns(utxos)
   }
 }
 
