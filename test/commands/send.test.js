@@ -113,7 +113,8 @@ describe("send", () => {
       "height",
       "confirmations",
       "legacyAddress",
-      "cashAddress"
+      "cashAddress",
+      "hdIndex"
     ])
   })
 
@@ -135,7 +136,8 @@ describe("send", () => {
       "height",
       "confirmations",
       "legacyAddress",
-      "cashAddress"
+      "cashAddress",
+      "hdIndex"
     ])
 
     // Since this test uses mocked data, the values are known ahead of time.
