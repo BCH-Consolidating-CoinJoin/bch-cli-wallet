@@ -20,7 +20,7 @@ util.inspect.defaultOptions = {
 // Set default environment variables for unit tests.
 if (!process.env.TEST) process.env.TEST = "unit"
 
-describe("update-balances", () => {
+describe("util", () => {
   let BITBOX
 
   beforeEach(() => {

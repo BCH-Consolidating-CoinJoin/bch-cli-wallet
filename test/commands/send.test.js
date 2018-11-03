@@ -8,7 +8,7 @@
 "use strict"
 
 const assert = require("chai").assert
-const UpdateBalances = require("../../src/commands/update-balances")
+const Send = require("../../src/commands/send")
 const { bitboxMock } = require("../mocks/bitbox")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const testwallet = require("../mocks/testwallet.json")
@@ -24,7 +24,7 @@ util.inspect.defaultOptions = {
 // Set default environment variables for unit tests.
 if (!process.env.TEST) process.env.TEST = "unit"
 
-describe("update-balances", () => {
+describe("send", () => {
   let BITBOX
 
   beforeEach(() => {
@@ -34,8 +34,8 @@ describe("update-balances", () => {
 
   it("should throw error if name is not supplied.", async () => {
     try {
-      const updateBalances = new UpdateBalances()
-      await updateBalances.validateFlags({})
+      const send = new Send()
+      await send.validateFlags({})
     } catch (err) {
       assert.include(
         err.message,
@@ -45,13 +45,39 @@ describe("update-balances", () => {
     }
   })
 
-  it("should generate an address accurately.", async () => {
-    BITBOX = new BB({})
+  it("should throw error if BCH quantity is not supplied.", async () => {
+    try {
+      const flags = {
+        name: `testwallet`
+      }
 
-    const updateBalances = new UpdateBalances()
-    const addr = updateBalances.generateAddress(testwallet, 3, BITBOX)
+      const send = new Send()
+      await send.validateFlags(flags)
+    } catch (err) {
+      assert.include(
+        err.message,
+        `You must specify a quantity in BCH with the -b flag.`,
+        "Expected error message."
+      )
+    }
+  })
 
-    assert.equal(addr, "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3")
+  it("should throw error if recieving address is not supplied.", async () => {
+    try {
+      const flags = {
+        name: `testwallet`,
+        bch: 0.000005
+      }
+
+      const send = new Send()
+      await send.validateFlags(flags)
+    } catch (err) {
+      assert.include(
+        err.message,
+        `You must specify a send-to address with the -a flag.`,
+        "Expected error message."
+      )
+    }
   })
 
   it("should get balances for all addresses in wallet", async () => {
@@ -59,14 +85,24 @@ describe("update-balances", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
-    const updateBalances = new UpdateBalances()
-    const balances = await updateBalances.getAddressData(testwallet, BITBOX)
-    //console.log(`balances: ${util.inspect(balances)}`)
+    const send = new Send()
+    const utxos = await send.getUTXOs(testwallet, BITBOX)
+    //console.log(`utxos: ${util.inspect(utxos)}`)
 
-    assert.isArray(balances, "Expect array of address balances")
-    assert.equal(balances.length, testwallet.nextAddress)
+    assert.isArray(utxos, "Expect array of utxos")
+    assert.hasAllKeys(utxos[0], [
+      "txid",
+      "vout",
+      "scriptPubKey",
+      "amount",
+      "satoshis",
+      "height",
+      "confirmations",
+      "legacyAddress",
+      "cashAddress"
+    ])
   })
-
+  /*
   it("generates a hasBalance array", async () => {
     // Retrieve mocked data.
     const addressData = BITBOX.Address.details()
@@ -122,4 +158,5 @@ describe("update-balances", () => {
       "Expect array of addresses with balances."
     )
   })
+  */
 })

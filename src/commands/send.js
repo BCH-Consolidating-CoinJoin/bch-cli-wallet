@@ -51,11 +51,11 @@ class Send extends Command {
 
       // Get info on UTXOs controlled by this wallet.
       const utxos = await this.getUTXOs(walletInfo, BITBOX)
-      console.log(`utxos: ${util.inspect(utxos)}`)
+      //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
       const utxo = await this.selectUTXO(bch, utxos, BITBOX)
-      console.log(`selected utxo: ${util.inspect(utxo)}`)
+      //console.log(`selected utxo: ${util.inspect(utxo)}`)
 
       // Exit if there is no UTXO big enough to fulfill the transaction.
       if (!utxo.amount) {
@@ -94,7 +94,7 @@ class Send extends Command {
       else var transactionBuilder = new BITBOX.TransactionBuilder()
 
       const satoshisToSend = bch * 100000000
-      console.log(`Amount to send in satoshis: ${satoshisToSend}`)
+      //console.log(`Amount to send in satoshis: ${satoshisToSend}`)
       const originalAmount = utxo.satoshis
 
       const vout = utxo.vout
@@ -108,10 +108,10 @@ class Send extends Command {
         { P2PKH: 1 },
         { P2PKH: 2 }
       )
-      console.log(`byteCount: ${byteCount}`)
+      //console.log(`byteCount: ${byteCount}`)
       const satoshisPerByte = 1.1
       const txFee = Math.floor(satoshisPerByte * byteCount)
-      console.log(`txFee: ${txFee} satoshis\n`)
+      //console.log(`txFee: ${txFee} satoshis\n`)
 
       // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
       const remainder = originalAmount - satoshisToSend - txFee
@@ -142,7 +142,7 @@ class Send extends Command {
       const tx = transactionBuilder.build()
       // output rawhex
       const hex = tx.toHex()
-      console.log(`Transaction raw hex: `)
+      //console.log(`Transaction raw hex: `)
       //console.log(hex)
 
       // sendRawTransaction to running BCH node
@@ -203,7 +203,7 @@ class Send extends Command {
           //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
 
           // Add the HD node index to the UTXO for use later.
-          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
+          //thisUTXO.hdIndex = walletInfo.hasBalance[i].index
 
           // Add the UTXO to the array if it has at least one confirmation.
           if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
