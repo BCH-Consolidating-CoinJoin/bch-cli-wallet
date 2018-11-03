@@ -99,9 +99,58 @@ const utxos = [
       confirmations: 644,
       legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
       cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+    },
+    {
+      txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
+      vout: 0,
+      scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
+      amount: 0.03,
+      satoshis: 3000000,
+      height: 1265272,
+      confirmations: 733,
+      legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
     }
   ]
 ]
+
+class mockTransactionBuilder {
+  constructor() {
+    this.hashTypes = {
+      SIGHASH_ALL: 0x01,
+      SIGHASH_NONE: 0x02,
+      SIGHASH_SINGLE: 0x03,
+      SIGHASH_ANYONECANPAY: 0x80,
+      SIGHASH_BITCOINCASH_BIP143: 0x40,
+      ADVANCED_TRANSACTION_MARKER: 0x00,
+      ADVANCED_TRANSACTION_FLAG: 0x01
+    }
+
+    this.transaction = new mockTxBuilder()
+  }
+  addInput() {
+    sinon.stub().returns({})
+  }
+  addOutput() {
+    sinon.stub().returns({})
+  }
+  sign() {
+    sinon.stub().returns({})
+  }
+  build() {
+    return new mockTxBuilder()
+  }
+}
+
+class mockTxBuilder {
+  constructor() {}
+  toHex() {
+    return "mockTXHex"
+  }
+  build() {
+    return this.toHex
+  }
+}
 
 const bitboxMock = {
   Mnemonic: {
@@ -113,11 +162,19 @@ const bitboxMock = {
     fromSeed: sinon.stub().returns({}),
     derivePath: sinon.stub().returns({}),
     toCashAddress: sinon.stub().returns({}),
-    toLegacyAddress: sinon.stub().returns({})
+    toLegacyAddress: sinon.stub().returns({}),
+    toKeyPair: sinon.stub().returns({})
   },
   Address: {
     details: sinon.stub().returns(addressDetails),
     utxo: sinon.stub().returns(utxos)
+  },
+  TransactionBuilder: mockTransactionBuilder,
+  BitcoinCash: {
+    getByteCount: sinon.stub().returns(250)
+  },
+  RawTransactions: {
+    sendRawTransaction: sinon.stub().returns(`mockTXID`)
   }
 }
 

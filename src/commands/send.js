@@ -140,6 +140,7 @@ class Send extends Command {
 
       // build tx
       const tx = transactionBuilder.build()
+
       // output rawhex
       const hex = tx.toHex()
       //console.log(`Transaction raw hex: `)

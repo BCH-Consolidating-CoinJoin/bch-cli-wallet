@@ -1,7 +1,6 @@
 /*
   TODO:
-  -Returns error if name is not provided.
-  -Returns error if wallet does not exist.
+
 
 */
 
@@ -26,16 +25,18 @@ if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("send", () => {
   let BITBOX
+  let mockedWallet
 
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
+    mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
   })
 
-  it("should throw error if name is not supplied.", async () => {
+  it("should throw error if name is not supplied.", () => {
     try {
       const send = new Send()
-      await send.validateFlags({})
+      send.validateFlags({})
     } catch (err) {
       assert.include(
         err.message,
@@ -45,14 +46,14 @@ describe("send", () => {
     }
   })
 
-  it("should throw error if BCH quantity is not supplied.", async () => {
+  it("should throw error if BCH quantity is not supplied.", () => {
     try {
       const flags = {
         name: `testwallet`
       }
 
       const send = new Send()
-      await send.validateFlags(flags)
+      send.validateFlags(flags)
     } catch (err) {
       assert.include(
         err.message,
@@ -62,7 +63,7 @@ describe("send", () => {
     }
   })
 
-  it("should throw error if recieving address is not supplied.", async () => {
+  it("should throw error if recieving address is not supplied.", () => {
     try {
       const flags = {
         name: `testwallet`,
@@ -70,7 +71,7 @@ describe("send", () => {
       }
 
       const send = new Send()
-      await send.validateFlags(flags)
+      send.validateFlags(flags)
     } catch (err) {
       assert.include(
         err.message,
@@ -80,7 +81,20 @@ describe("send", () => {
     }
   })
 
-  it("should get balances for all addresses in wallet", async () => {
+  it("should return true if all flags are supplied.", () => {
+    const flags = {
+      name: `testwallet`,
+      bch: 0.000005,
+      sendAddr: `abc`
+    }
+
+    const send = new Send()
+    const result = send.validateFlags(flags)
+
+    assert.equal(result, true)
+  })
+
+  it("should get all UTXOs in wallet", async () => {
     // Use the real library if this is not a unit test.
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
@@ -102,61 +116,88 @@ describe("send", () => {
       "cashAddress"
     ])
   })
-  /*
-  it("generates a hasBalance array", async () => {
-    // Retrieve mocked data.
-    const addressData = BITBOX.Address.details()
 
-    const updateBalances = new UpdateBalances()
-    const hasBalance = await updateBalances.generateHasBalance(addressData)
-    //console.log(`hasBalance: ${util.inspect(hasBalance)}`)
+  it("should select a single UTXO", async () => {
+    const bch = 0.025
+    const utxos = bitboxMock.Address.utxo()
 
-    assert.isArray(hasBalance, "Expect array of addresses with balances.")
-    assert.hasAllKeys(hasBalance[0], [
-      "index",
-      "balance",
-      "balanceSat",
-      "unconfirmedBalance",
-      "unconfirmedBalanceSat",
+    const send = new Send()
+    const utxo = await send.selectUTXO(bch, utxos[0], BITBOX)
+    //console.log(`utxo: ${util.inspect(utxo)}`)
+
+    assert.isObject(utxo, "Expect single utxo object")
+    assert.hasAllKeys(utxo, [
+      "txid",
+      "vout",
+      "scriptPubKey",
+      "amount",
+      "satoshis",
+      "height",
+      "confirmations",
+      "legacyAddress",
       "cashAddress"
     ])
+
+    // Since this test uses mocked data, the values are known ahead of time.
+    assert.equal(utxo.amount, 0.03)
   })
 
-  it("should aggregate balances", async () => {
-    // Retrieve mocked data
-    const addressData = BITBOX.Address.details()
-    const updateBalances = new UpdateBalances()
-    const hasBalance = await updateBalances.generateHasBalance(addressData)
+  it("should send BCH on testnet", async () => {
+    const bch = 0.000005 // BCH to send in an integration test.
+    const utxo = {
+      txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
+      vout: 0,
+      scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
+      amount: 0.03,
+      satoshis: 3000000,
+      height: 1265272,
+      confirmations: 733,
+      legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+    }
+    const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
 
-    const balanceTotal = await updateBalances.sumConfirmedBalances(hasBalance)
-    //console.log(`balanceTotal: ${balanceTotal}`)
-
-    assert.equal(balanceTotal, 0.09999751999999999)
-  })
-
-  it("should update balances", async () => {
-    // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-
-    const updateBalances = new UpdateBalances()
-    const walletInfo = await updateBalances.updateBalances(testwallet, BITBOX)
-    //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
-
-    assert.hasAllKeys(walletInfo, [
-      "network",
-      "mnemonic",
-      "balance",
-      "nextAddress",
-      "hasBalance",
-      "rootAddress",
-      "name"
-    ])
-
-    assert.isArray(
-      walletInfo.hasBalance,
-      "Expect array of addresses with balances."
+    const send = new Send()
+    const txid = await send.sendBCH(
+      utxo,
+      bch,
+      utxo.changeAddress,
+      sendToAddr,
+      testwallet,
+      BITBOX
     )
+
+    assert.equal(txid, `mockTXID`)
   })
-  */
+
+  it("should send BCH on mainnet", async () => {
+    const bch = 0.000005 // BCH to send in an integration test.
+    const utxo = {
+      txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
+      vout: 0,
+      scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
+      amount: 0.03,
+      satoshis: 3000000,
+      height: 1265272,
+      confirmations: 733,
+      legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3"
+    }
+    const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
+
+    // Switch to testnet
+    mockedWallet.network = "mainnet"
+
+    const send = new Send()
+    const txid = await send.sendBCH(
+      utxo,
+      bch,
+      utxo.changeAddress,
+      sendToAddr,
+      mockedWallet,
+      BITBOX
+    )
+
+    assert.equal(txid, `mockTXID`)
+  })
 })

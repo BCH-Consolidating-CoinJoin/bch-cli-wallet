@@ -1,7 +1,6 @@
 /*
   TODO:
-  -Returns error if name is not provided.
-  -Returns error if wallet does not exist.
+
 
 */
 
@@ -69,7 +68,7 @@ describe("update-balances", () => {
 
   it("generates a hasBalance array", async () => {
     // Retrieve mocked data.
-    const addressData = BITBOX.Address.details()
+    const addressData = bitboxMock.Address.details()
 
     const updateBalances = new UpdateBalances()
     const hasBalance = await updateBalances.generateHasBalance(addressData)
@@ -88,7 +87,7 @@ describe("update-balances", () => {
 
   it("should aggregate balances", async () => {
     // Retrieve mocked data
-    const addressData = BITBOX.Address.details()
+    const addressData = bitboxMock.Address.details()
     const updateBalances = new UpdateBalances()
     const hasBalance = await updateBalances.generateHasBalance(addressData)
 
