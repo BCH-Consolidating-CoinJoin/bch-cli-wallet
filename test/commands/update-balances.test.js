@@ -25,10 +25,12 @@ if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("update-balances", () => {
   let BITBOX
+  let mockedWallet
 
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
+    mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
   })
 
   it("should throw error if name is not supplied.", async () => {
@@ -48,7 +50,7 @@ describe("update-balances", () => {
     BITBOX = new BB({})
 
     const updateBalances = new UpdateBalances()
-    const addr = updateBalances.generateAddress(testwallet, 3, BITBOX)
+    const addr = updateBalances.generateAddress(mockedWallet, 3, BITBOX)
 
     assert.equal(addr, "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3")
   })
@@ -59,11 +61,11 @@ describe("update-balances", () => {
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
     const updateBalances = new UpdateBalances()
-    const balances = await updateBalances.getAddressData(testwallet, BITBOX)
+    const balances = await updateBalances.getAddressData(mockedWallet, BITBOX)
     //console.log(`balances: ${util.inspect(balances)}`)
 
     assert.isArray(balances, "Expect array of address balances")
-    assert.equal(balances.length, testwallet.nextAddress)
+    assert.equal(balances.length, mockedWallet.nextAddress)
   })
 
   it("generates a hasBalance array", async () => {
@@ -103,7 +105,7 @@ describe("update-balances", () => {
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
     const updateBalances = new UpdateBalances()
-    const walletInfo = await updateBalances.updateBalances(testwallet, BITBOX)
+    const walletInfo = await updateBalances.updateBalances(mockedWallet, BITBOX)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     assert.hasAllKeys(walletInfo, [

@@ -10,10 +10,19 @@
 
 const fs = require("fs")
 
+// Inspect utility used for debugging.
+const util = require("util")
+util.inspect.defaultOptions = {
+  showHidden: true,
+  colors: true,
+  depth: 1
+}
+
 module.exports = {
   saveWallet,
   openWallet,
-  changeAddrFromMnemonic
+  changeAddrFromMnemonic, // Used for signing transactions.
+  getUTXOs // Get all UTXOs associated with a wallet.
 }
 
 // Wrap the file save stuff in a Promise.
@@ -60,4 +69,38 @@ function changeAddrFromMnemonic(mnemonic, index, BITBOX) {
   const change = BITBOX.HDNode.derivePath(account, `0/${index}`)
 
   return change
+}
+
+// Returns an array of UTXO objects. These objects contain the metadata needed
+// to optimize the selection of a UTXO for spending.
+async function getUTXOs(walletInfo, BITBOX) {
+  try {
+    const retArray = []
+
+    // Loop through each address that has a balance.
+    for (var i = 0; i < walletInfo.hasBalance.length; i++) {
+      const thisAddr = walletInfo.hasBalance[i].cashAddress
+
+      // Get the UTXOs for that address.
+      const u = await BITBOX.Address.utxo([thisAddr])
+      //console.log(`u for ${thisAddr}: ${util.inspect(u[0])}`)
+
+      // Loop through each UXTO returned
+      for (var j = 0; j < u[0].length; j++) {
+        const thisUTXO = u[0][j]
+        //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
+
+        // Add the HD node index to the UTXO for use later.
+        thisUTXO.hdIndex = walletInfo.hasBalance[i].index
+
+        // Add the UTXO to the array if it has at least one confirmation.
+        if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
+      }
+    }
+
+    return retArray
+  } catch (err) {
+    console.log(`Error in getUTXOs.`)
+    throw err
+  }
 }

@@ -52,7 +52,7 @@ class Send extends Command {
       walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
 
       // Get info on UTXOs controlled by this wallet.
-      const utxos = await this.getUTXOs(walletInfo, BITBOX)
+      const utxos = await appUtils.getUTXOs(walletInfo, BITBOX)
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
@@ -207,40 +207,6 @@ class Send extends Command {
     }
 
     return candidateUTXO
-  }
-
-  // Returns an array of UTXO objects. These objects contain the metadata needed
-  // to optimize the selection of a UTXO for spending.
-  async getUTXOs(walletInfo, BITBOX) {
-    try {
-      const retArray = []
-
-      // Loop through each address that has a balance.
-      for (var i = 0; i < walletInfo.hasBalance.length; i++) {
-        const thisAddr = walletInfo.hasBalance[i].cashAddress
-
-        // Get the UTXOs for that address.
-        const u = await BITBOX.Address.utxo([thisAddr])
-        //console.log(`u for ${thisAddr}: ${util.inspect(u[0])}`)
-
-        // Loop through each UXTO returned
-        for (var j = 0; j < u[0].length; j++) {
-          const thisUTXO = u[0][j]
-          //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
-
-          // Add the HD node index to the UTXO for use later.
-          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
-
-          // Add the UTXO to the array if it has at least one confirmation.
-          if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
-        }
-      }
-
-      return retArray
-    } catch (err) {
-      console.log(`Error in getUTXOs.`)
-      throw err
-    }
   }
 
   // Validate the proper flags are passed in.
