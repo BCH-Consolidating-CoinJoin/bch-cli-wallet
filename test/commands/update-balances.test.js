@@ -94,7 +94,7 @@ describe("update-balances", () => {
     const balanceTotal = await updateBalances.sumConfirmedBalances(hasBalance)
     //console.log(`balanceTotal: ${balanceTotal}`)
 
-    assert.equal(balanceTotal, 0.09999751999999999)
+    assert.equal(balanceTotal, 0.09999752)
   })
 
   it("should update balances", async () => {

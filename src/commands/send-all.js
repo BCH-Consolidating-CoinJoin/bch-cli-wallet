@@ -62,21 +62,6 @@ class SendAll extends Command {
       const utxos = await this.getUTXOs(walletInfo, BITBOX)
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
-      // Select optimal UTXO
-      //const utxo = await this.selectUTXO(bch, utxos, BITBOX)
-      //console.log(`selected utxo: ${util.inspect(utxo)}`)
-
-      // Exit if there is no UTXO big enough to fulfill the transaction.
-      //if (!utxo.amount) {
-      //  this.log(`Could not find a UTXO big enough for this transaction.`)
-      //  return
-      //}
-
-      // Generate a new address, for sending change to.
-      //const getAddress = new GetAddress()
-      //const changeAddress = await getAddress.getAddress(name, BITBOX)
-      //console.log(`changeAddress: ${changeAddress}`)
-
       // Send the BCH, transfer change to the new address
       const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
 
@@ -158,12 +143,12 @@ class SendAll extends Command {
 
       // output rawhex
       const hex = tx.toHex()
-      console.log(`Transaction raw hex: `)
-      console.log(hex)
+      //console.log(`Transaction raw hex: ${hex}`)
 
       // sendRawTransaction to running BCH node
       const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
-      console.log(`Transaction ID: ${broadcast}`)
+      //console.log(`Transaction ID: ${broadcast}`)
+
       return broadcast
     } catch (err) {
       console.log(`Error in sendAllBCH()`)
