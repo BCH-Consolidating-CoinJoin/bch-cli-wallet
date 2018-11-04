@@ -3,7 +3,7 @@
   Common functions used by several commands.
 
   TODO:
-  Update changeAddrFromMnemonic to work with mainnet.
+  
 */
 
 "use strict"
@@ -55,12 +55,14 @@ function openWallet(name) {
 }
 
 // Generate a change address from a Mnemonic of a private key.
-function changeAddrFromMnemonic(mnemonic, index, BITBOX) {
+function changeAddrFromMnemonic(walletInfo, index, BITBOX) {
   // root seed buffer
-  const rootSeed = BITBOX.Mnemonic.toSeed(mnemonic)
+  const rootSeed = BITBOX.Mnemonic.toSeed(walletInfo.mnemonic)
 
   // master HDNode
-  const masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
+  if (walletInfo.network === "testnet")
+    var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed, "testnet")
+  else var masterHDNode = BITBOX.HDNode.fromSeed(rootSeed)
 
   // HDNode of BIP44 account
   const account = BITBOX.HDNode.derivePath(masterHDNode, "m/44'/145'/0'")

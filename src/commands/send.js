@@ -144,7 +144,7 @@ class Send extends Command {
 
       // Generate a keypair from the change address.
       const change = appUtil.changeAddrFromMnemonic(
-        walletInfo.mnemonic,
+        walletInfo,
         utxo.hdIndex,
         BITBOX
       )

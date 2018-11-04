@@ -123,7 +123,7 @@ class SendAll extends Command {
 
         // Generate a keypair for the current address.
         const change = appUtil.changeAddrFromMnemonic(
-          walletInfo.mnemonic,
+          walletInfo,
           utxo.hdIndex,
           BITBOX
         )
