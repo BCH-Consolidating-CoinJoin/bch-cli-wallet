@@ -155,6 +155,12 @@ class UpdateBalances extends Command {
       total += thisHasBalance.balance
     }
 
+    // Convert to satoshis
+    const totalSatoshis = Math.floor(total * 100000000)
+
+    // Convert back to BCH
+    total = totalSatoshis / 100000000
+
     return total
   }
 }
