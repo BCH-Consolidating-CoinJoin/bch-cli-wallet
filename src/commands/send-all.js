@@ -8,12 +8,15 @@
   linking all addresses and UTXOs. This can be used to
   deanonymize users.
 
-  Dev Note:
-  -sendAllBCH needs to be totally refactored. I am currently trying to retrieve
-  one key, but I actually need to create a signing key for each address.
+  The order of operations matter. The code below complete the following steps
+  *in order*:
+  -Add each UTXO as an input to the TX
+  -Calculate the TX fee
+  -Add the output
+  -Loop through each input and sign
+  -Build the transaction
+  -Broadcast the transaction
 
-  -previous code that I copied here assumes *one* address with multiple UTXOs in
-  the transaction. Here I have *multiple* addresses with multiple UTXOs.
 */
 
 "use strict"
@@ -95,33 +98,24 @@ class SendAll extends Command {
         var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
       else var transactionBuilder = new BITBOX.TransactionBuilder()
 
-      // Combine all the utxos into the inputs of the TX.
-      const inputs = []
       let originalAmount = 0
 
-      //for (let i = 0; i < utxos.length; i++) {
-      for (let i = 0; i < 1; i++) {
-        // REST API only supports 20 UTXOs at a time.
-        if (i > 20) break
-
+      // Calulate the original amount in the wallet and add all UTXOs to the
+      // transaction builder.
+      for (var i = 0; i < utxos.length; i++) {
         const utxo = utxos[i]
 
         originalAmount = originalAmount + utxo.satoshis
 
-        inputs.push(utxo)
-
         transactionBuilder.addInput(utxo.txid, utxo.vout)
       }
 
-      console.log(`inputs: ${util.inspect(inputs)}`)
-
       // original amount of satoshis in vin
-      //const originalAmount = inputs.length * dust
       console.log(`originalAmount: ${originalAmount}`)
 
       // get byte count to calculate fee. paying 1 sat/byte
       const byteCount = BITBOX.BitcoinCash.getByteCount(
-        { P2PKH: inputs.length },
+        { P2PKH: utxos.length },
         { P2PKH: 1 }
       )
       console.log(`fee: ${byteCount}`)
@@ -136,26 +130,28 @@ class SendAll extends Command {
         sendAmount
       )
 
-      // Generate a keypair from the change address.
-      const change = appUtil.changeAddrFromMnemonic(
-        walletInfo.mnemonic,
-        0,
-        BITBOX
-      )
-      const keyPair = BITBOX.HDNode.toKeyPair(change)
-
-      // sign w/ HDNode
       let redeemScript
-      inputs.forEach((input, index) => {
-        //console.log(`inputs[${index}]: ${util.inspect(inputs[index])}`)
+
+      // Loop through each input and sign
+      for (var i = 0; i < utxos.length; i++) {
+        const utxo = utxos[i]
+
+        // Generate a keypair for the current address.
+        const change = appUtil.changeAddrFromMnemonic(
+          walletInfo.mnemonic,
+          utxo.hdIndex,
+          BITBOX
+        )
+        const keyPair = BITBOX.HDNode.toKeyPair(change)
+
         transactionBuilder.sign(
-          index,
+          i,
           keyPair,
           redeemScript,
           transactionBuilder.hashTypes.SIGHASH_ALL,
-          inputs[index].satoshis
+          utxo.satoshis
         )
-      })
+      }
 
       // build tx
       const tx = transactionBuilder.build()
@@ -167,10 +163,10 @@ class SendAll extends Command {
 
       // sendRawTransaction to running BCH node
       const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
-      //console.log(`Transaction ID: ${broadcast}`)
+      console.log(`Transaction ID: ${broadcast}`)
       return broadcast
     } catch (err) {
-      console.log(`Error in sendBCH()`)
+      console.log(`Error in sendAllBCH()`)
       throw err
     }
   }
