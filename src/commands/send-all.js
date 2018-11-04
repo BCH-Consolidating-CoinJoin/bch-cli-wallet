@@ -7,6 +7,13 @@
   This command has a negative effect on the users privacy by
   linking all addresses and UTXOs. This can be used to
   deanonymize users.
+
+  Dev Note:
+  -sendAllBCH needs to be totally refactored. I am currently trying to retrieve
+  one key, but I actually need to create a signing key for each address.
+
+  -previous code that I copied here assumes *one* address with multiple UTXOs in
+  the transaction. Here I have *multiple* addresses with multiple UTXOs.
 */
 
 "use strict"
@@ -81,7 +88,7 @@ class SendAll extends Command {
   // Sends BCH to
   async sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX) {
     try {
-      console.log(`utxos: ${util.inspect(utxos)}`)
+      //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // instance of transaction builder
       if (walletInfo.network === `testnet`)
@@ -92,7 +99,8 @@ class SendAll extends Command {
       const inputs = []
       let originalAmount = 0
 
-      for (let i = 0; i < utxos.length; i++) {
+      //for (let i = 0; i < utxos.length; i++) {
+      for (let i = 0; i < 1; i++) {
         // REST API only supports 20 UTXOs at a time.
         if (i > 20) break
 
@@ -104,6 +112,8 @@ class SendAll extends Command {
 
         transactionBuilder.addInput(utxo.txid, utxo.vout)
       }
+
+      console.log(`inputs: ${util.inspect(inputs)}`)
 
       // original amount of satoshis in vin
       //const originalAmount = inputs.length * dust

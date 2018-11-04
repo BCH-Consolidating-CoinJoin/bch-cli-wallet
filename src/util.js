@@ -1,6 +1,9 @@
 /*
   Utility Library.
   Common functions used by several commands.
+
+  TODO:
+  Update changeAddrFromMnemonic to work with mainnet.
 */
 
 "use strict"
