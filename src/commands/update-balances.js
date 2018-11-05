@@ -81,6 +81,7 @@ class UpdateBalances extends Command {
     const balances = []
     for (var i = 0; i < numberOfAddresses; i++) {
       const thisAddress = this.generateAddress(walletInfo, i, BITBOX)
+      //console.log(`thisAddress: ${thisAddress}`)
 
       // get BCH balance
       let balance = await BITBOX.Address.details([thisAddress])
@@ -154,6 +155,12 @@ class UpdateBalances extends Command {
 
       total += thisHasBalance.balance
     }
+
+    // Convert to satoshis
+    const totalSatoshis = Math.floor(total * 100000000)
+
+    // Convert back to BCH
+    total = totalSatoshis / 100000000
 
     return total
   }

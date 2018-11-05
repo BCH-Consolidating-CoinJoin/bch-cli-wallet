@@ -27,7 +27,8 @@ class CreateWallet extends Command {
       // Exit if a name is not supplied.
       if (!name || name === "") {
         this.log(`Please supply a name for the wallet with the -n argument.`)
-        this.exit(1)
+        //this.exit(1)
+        return
       }
 
       // Initialize the wallet data object that will be saved to a file.

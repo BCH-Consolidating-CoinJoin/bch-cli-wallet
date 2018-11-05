@@ -94,30 +94,6 @@ describe("send", () => {
     assert.equal(result, true)
   })
 
-  it("should get all UTXOs in wallet", async () => {
-    // Use the real library if this is not a unit test.
-    if (process.env.TEST !== "unit")
-      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-
-    const send = new Send()
-    const utxos = await send.getUTXOs(testwallet, BITBOX)
-    //console.log(`utxos: ${util.inspect(utxos)}`)
-
-    assert.isArray(utxos, "Expect array of utxos")
-    assert.hasAllKeys(utxos[0], [
-      "txid",
-      "vout",
-      "scriptPubKey",
-      "amount",
-      "satoshis",
-      "height",
-      "confirmations",
-      "legacyAddress",
-      "cashAddress",
-      "hdIndex"
-    ])
-  })
-
   it("should select a single UTXO", async () => {
     const bch = 0.025
     const utxos = bitboxMock.Address.utxo()
@@ -187,7 +163,7 @@ describe("send", () => {
     }
     const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
 
-    // Switch to testnet
+    // Switch to mainnet
     mockedWallet.network = "mainnet"
 
     const send = new Send()

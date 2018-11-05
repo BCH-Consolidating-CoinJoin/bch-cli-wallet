@@ -1,9 +1,6 @@
 /*
   oclif command to send BCH to an address.
 
-  The 'update-balances' command should be run before executing this command, so
-  the wallet has the most up to date balances.
-
   The spending of UTXOs is optimized for privacy. The UTXO selected is equal to
   or bigger than the amount specified, but as close to it as possible. Change is
   always sent to a new address.
@@ -55,7 +52,7 @@ class Send extends Command {
       walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
 
       // Get info on UTXOs controlled by this wallet.
-      const utxos = await this.getUTXOs(walletInfo, BITBOX)
+      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // Select optimal UTXO
@@ -71,7 +68,7 @@ class Send extends Command {
       // Generate a new address, for sending change to.
       const getAddress = new GetAddress()
       const changeAddress = await getAddress.getAddress(name, BITBOX)
-      console.log(`changeAddress: ${changeAddress}`)
+      //console.log(`changeAddress: ${changeAddress}`)
 
       // Send the BCH, transfer change to the new address
       const txid = await this.sendBCH(
@@ -101,7 +98,7 @@ class Send extends Command {
         var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
       else var transactionBuilder = new BITBOX.TransactionBuilder()
 
-      const satoshisToSend = bch * 100000000
+      const satoshisToSend = Math.floor(bch * 100000000)
       //console.log(`Amount to send in satoshis: ${satoshisToSend}`)
       const originalAmount = utxo.satoshis
 
@@ -123,6 +120,7 @@ class Send extends Command {
 
       // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
       const remainder = originalAmount - satoshisToSend - txFee
+      //console.log(`remainder: ${remainder}`)
 
       // Debugging.
       /*
@@ -139,7 +137,10 @@ class Send extends Command {
       */
 
       // add output w/ address and amount to send
-      transactionBuilder.addOutput(sendToAddr, satoshisToSend)
+      transactionBuilder.addOutput(
+        BITBOX.Address.toLegacyAddress(sendToAddr),
+        satoshisToSend
+      )
       transactionBuilder.addOutput(
         BITBOX.Address.toLegacyAddress(changeAddress),
         remainder
@@ -147,7 +148,7 @@ class Send extends Command {
 
       // Generate a keypair from the change address.
       const change = appUtil.changeAddrFromMnemonic(
-        walletInfo.mnemonic,
+        walletInfo,
         utxo.hdIndex,
         BITBOX
       )
@@ -212,40 +213,6 @@ class Send extends Command {
     return candidateUTXO
   }
 
-  // Returns an array of UTXO objects. These objects contain the metadata needed
-  // to optimize the selection of a UTXO for spending.
-  async getUTXOs(walletInfo, BITBOX) {
-    try {
-      const retArray = []
-
-      // Loop through each address that has a balance.
-      for (var i = 0; i < walletInfo.hasBalance.length; i++) {
-        const thisAddr = walletInfo.hasBalance[i].cashAddress
-
-        // Get the UTXOs for that address.
-        const u = await BITBOX.Address.utxo([thisAddr])
-        //console.log(`u for ${thisAddr}: ${util.inspect(u[0])}`)
-
-        // Loop through each UXTO returned
-        for (var j = 0; j < u[0].length; j++) {
-          const thisUTXO = u[0][j]
-          //console.log(`thisUTXO: ${util.inspect(thisUTXO)}`)
-
-          // Add the HD node index to the UTXO for use later.
-          thisUTXO.hdIndex = walletInfo.hasBalance[i].index
-
-          // Add the UTXO to the array if it has at least one confirmation.
-          if (thisUTXO.confirmations > 0) retArray.push(thisUTXO)
-        }
-      }
-
-      return retArray
-    } catch (err) {
-      console.log(`Error in getUTXOs.`)
-      throw err
-    }
-  }
-
   // Validate the proper flags are passed in.
   validateFlags(flags) {
     // Exit if wallet not specified.
@@ -265,7 +232,7 @@ class Send extends Command {
   }
 }
 
-Send.description = `Poll the network and update the balances of the wallet.`
+Send.description = `Send an amount of BCH`
 
 Send.flags = {
   name: flags.string({ char: "n", description: "Name of wallet" }),
