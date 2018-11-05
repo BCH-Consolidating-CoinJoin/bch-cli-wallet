@@ -163,7 +163,7 @@ describe("send", () => {
     }
     const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
 
-    // Switch to testnet
+    // Switch to mainnet
     mockedWallet.network = "mainnet"
 
     const send = new Send()

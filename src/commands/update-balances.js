@@ -81,6 +81,7 @@ class UpdateBalances extends Command {
     const balances = []
     for (var i = 0; i < numberOfAddresses; i++) {
       const thisAddress = this.generateAddress(walletInfo, i, BITBOX)
+      //console.log(`thisAddress: ${thisAddress}`)
 
       // get BCH balance
       let balance = await BITBOX.Address.details([thisAddress])

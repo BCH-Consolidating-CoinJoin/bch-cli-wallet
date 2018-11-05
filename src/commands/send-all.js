@@ -96,18 +96,18 @@ class SendAll extends Command {
       }
 
       // original amount of satoshis in vin
-      console.log(`originalAmount: ${originalAmount}`)
+      //console.log(`originalAmount: ${originalAmount}`)
 
       // get byte count to calculate fee. paying 1 sat/byte
       const byteCount = BITBOX.BitcoinCash.getByteCount(
         { P2PKH: utxos.length },
         { P2PKH: 1 }
       )
-      console.log(`fee: ${byteCount}`)
+      //console.log(`fee: ${byteCount}`)
 
       // amount to send to receiver. It's the original amount - 1 sat/byte for tx size
       const sendAmount = originalAmount - byteCount
-      console.log(`sendAmount: ${sendAmount}`)
+      //console.log(`sendAmount: ${sendAmount}`)
 
       // add output w/ address and amount to send
       transactionBuilder.addOutput(
@@ -171,7 +171,10 @@ class SendAll extends Command {
   }
 }
 
-SendAll.description = `Poll the network and update the balances of the wallet.`
+SendAll.description = `
+Send all BCH in a wallet to another address. This method has a negative impact
+on privacy by linking all addresses in a wallet.
+`
 
 SendAll.flags = {
   name: flags.string({ char: "n", description: "Name of wallet" }),
