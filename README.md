@@ -47,6 +47,7 @@ USAGE
 * [`bch-cli-wallet help [COMMAND]`](#bch-cli-wallet-help-command)
 * [`bch-cli-wallet list-wallets`](#bch-cli-wallet-list-wallets)
 * [`bch-cli-wallet send`](#bch-cli-wallet-send)
+* [`bch-cli-wallet send-all`](#bch-cli-wallet-send-all)
 * [`bch-cli-wallet update-balances`](#bch-cli-wallet-update-balances)
 
 ## `bch-cli-wallet create-wallet`
@@ -126,7 +127,7 @@ _See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-c
 
 ## `bch-cli-wallet send`
 
-Poll the network and update the balances of the wallet.
+Send an amount of BCH
 
 ```
 USAGE
@@ -139,6 +140,25 @@ OPTIONS
 ```
 
 _See code: [src/commands/send.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send.js)_
+
+## `bch-cli-wallet send-all`
+
+Send all BCH in a wallet to another address. This method has a negative impact
+
+```
+USAGE
+  $ bch-cli-wallet send-all
+
+OPTIONS
+  -a, --sendAddr=sendAddr  Cash address to send to
+  -n, --name=name          Name of wallet
+
+DESCRIPTION
+  Send all BCH in a wallet to another address. This method has a negative impact
+  on privacy by linking all addresses in a wallet.
+```
+
+_See code: [src/commands/send-all.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send-all.js)_
 
 ## `bch-cli-wallet update-balances`
 
