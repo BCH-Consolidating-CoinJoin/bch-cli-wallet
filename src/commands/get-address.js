@@ -59,9 +59,9 @@ class GetAddress extends Command {
     walletInfo.nextAddress++
 
     // Throw up a warning message when more than 100 addresses have been generated.
-    if (walletInfo.nextAddress > 20) {
+    if (walletInfo.nextAddress > 50) {
       console.log(`
-        Over 20 addresses have been generated with this wallet. You should
+        Over 50 addresses have been generated with this wallet. You should
         consider consolidating this wallet into a new one, to reduce processing
         time in tracking all the addresses.
       `)

@@ -22,7 +22,7 @@
 
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const appUtil = require("../util")
-//const GetAddress = require("./get-address")
+const GetAddress = require("./get-address")
 const UpdateBalances = require("./update-balances")
 const rp = require("request-promise")
 
@@ -44,7 +44,7 @@ class CoinJoin extends Command {
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      let walletInfo = appUtil.openWallet(name)
+      const walletInfo = appUtil.openWallet(name)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -57,15 +57,33 @@ class CoinJoin extends Command {
       // Query the server's standard BCH output.
       const stdout = await this.getStdOut(server)
       console.log(`stdout: ${stdout}`)
-      if (!stdout) throw new Error(`Could not connect with CoinJoin server.`)
+      if (!stdout) {
+        this.log(`Could not connect with CoinJoin server.`)
+        return
+      }
+
+      // Calculate the number of output addresses, based on the stdout.
+      const outAddrs = await this.calcOutAddrs(
+        stdout,
+        walletInfo.balance,
+        name,
+        BITBOX
+      )
+      console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
+      if (!outAddrs) {
+        this.log(`
+Less than one output wallet needed.
+Try a server with a lower standard output.`)
+        return
+      }
 
       // Update balances before sending.
-      const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
+      //const updateBalances = new UpdateBalances()
+      //walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
 
       // Get all UTXOs controlled by this wallet.
-      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
-      console.log(`utxos: ${util.inspect(utxos)}`)
+      //const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
+      //console.log(`utxos: ${util.inspect(utxos)}`)
 
       // Send the BCH, transfer change to the new address
       //const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
@@ -75,6 +93,34 @@ class CoinJoin extends Command {
       //if (err.message) console.log(err.message)
       //else console.log(`Error in .run: `, err)
       console.log(`Error in .run: `, err)
+    }
+  }
+
+  // Calulates the number of output addresses needed, based on the standard BCH
+  // output of the CoinJoin Server. It then automatically generates that many
+  // address and returns an array of BCH addresses.
+  // Returns false if the input values don't make sense.
+  async calcOutAddrs(stdout, balance, name, BITBOX) {
+    try {
+      const sanityCheck = balance / stdout
+
+      // Less than 1 output address doesn't make sense.
+      if (sanityCheck < 1) return false
+
+      const numAddrs = Math.ceil(sanityCheck)
+
+      const addrs = []
+      const getAddr = new GetAddress()
+
+      for (var i = 0; i < numAddrs; i++) {
+        const thisAddr = await getAddr.getAddress(name, BITBOX)
+        addrs.push(thisAddr)
+      }
+
+      return addrs
+    } catch (err) {
+      console.log(`Error in coinjoin.js/calcOutAddrs()`)
+      throw err
     }
   }
 
