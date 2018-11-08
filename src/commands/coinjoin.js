@@ -78,12 +78,13 @@ Try a server with a lower standard output.`)
       }
 
       // Update balances before sending.
-      //const updateBalances = new UpdateBalances()
-      //walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
+      const updateBalances = new UpdateBalances()
+      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
 
       // Get all UTXOs controlled by this wallet.
-      //const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
-      //console.log(`utxos: ${util.inspect(utxos)}`)
+      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
+      console.log(`utxos: ${util.inspect(utxos)}`)
+      console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
 
       // Send the BCH, transfer change to the new address
       //const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
