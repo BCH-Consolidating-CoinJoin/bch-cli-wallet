@@ -34,11 +34,7 @@ describe("get-address", () => {
       const getAddress = new GetAddress()
       await getAddress.getAddress(undefined, BITBOX)
     } catch (err) {
-      assert.include(
-        err.message,
-        `You must specify a wallet with the -n flag`,
-        "Expected error message."
-      )
+      assert.include(err.message, `Could not open`, "Expected error message.")
     }
   })
 
@@ -56,10 +52,12 @@ describe("get-address", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     // Create a testnet wallet
     const createWallet = new CreateWallet()
     const initialWalletInfo = await createWallet.createWallet(
-      "test123",
+      filename,
       BITBOX,
       "testnet"
     )
@@ -70,7 +68,7 @@ describe("get-address", () => {
 
     // Generate a new address
     const getAddress = new GetAddress()
-    await getAddress.getAddress(`test123`, BITBOX)
+    await getAddress.getAddress(filename, BITBOX)
 
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
     delete require.cache[require.resolve(`../../wallets/test123`)]

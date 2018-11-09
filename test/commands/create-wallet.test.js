@@ -32,7 +32,7 @@ describe("create-wallet", () => {
     } catch (err) {
       //console.error(`Error expected: ${util.inspect(err)}`)
 
-      assert.equal(err.code, "EEXIT", "Should exit as expected.")
+      assert.equal(err.code, "ERR_INVALID_ARG_TYPE", "Should exit as expected.")
     }
   })
 
@@ -41,9 +41,11 @@ describe("create-wallet", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     const createWallet = new CreateWallet()
     const walletData = await createWallet.createWallet(
-      "test123",
+      filename,
       BITBOX,
       undefined
     )
@@ -72,8 +74,10 @@ describe("create-wallet", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     const createWallet = new CreateWallet()
-    const walletData = await createWallet.createWallet("test123", BITBOX, false)
+    const walletData = await createWallet.createWallet(filename, BITBOX, false)
 
     assert.equal(walletData.network, "mainnet", "Expecting mainnet address")
     assert.hasAllKeys(walletData, [
@@ -99,9 +103,11 @@ describe("create-wallet", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     const createWallet = new CreateWallet()
     const walletData = await createWallet.createWallet(
-      "test123",
+      filename,
       BITBOX,
       "testnet"
     )

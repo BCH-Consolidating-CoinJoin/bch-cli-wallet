@@ -31,9 +31,11 @@ describe("list-wallets", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     // Create a mainnet wallet.
     const createWallet = new CreateWallet()
-    await createWallet.createWallet("test123", BITBOX, false)
+    await createWallet.createWallet(filename, BITBOX, false)
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()
@@ -52,9 +54,11 @@ describe("list-wallets", () => {
     if (process.env.TEST !== "unit")
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
+    const filename = `${__dirname}/../../wallets/test123.json`
+
     // Create a testnet wallet
     const createWallet = new CreateWallet()
-    await createWallet.createWallet("test123", BITBOX, "testnet")
+    await createWallet.createWallet(filename, BITBOX, "testnet")
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()

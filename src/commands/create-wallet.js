@@ -10,27 +10,25 @@ class CreateWallet extends Command {
     try {
       const { flags } = this.parse(CreateWallet)
 
+      // Validate input flags
+      this.validateFlags(flags)
+
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (flags.testnet)
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      this.createWallet(flags.name, BITBOX, flags.testnet)
+      const filename = `${__dirname}/../../wallets/${flags.name}.json`
+
+      this.createWallet(filename, BITBOX, flags.testnet)
     } catch (err) {
       console.log(`Error: `, err)
     }
   }
 
   // testnet is a boolean.
-  async createWallet(name, BITBOX, testnet) {
+  async createWallet(filename, BITBOX, testnet) {
     try {
-      // Exit if a name is not supplied.
-      if (!name || name === "") {
-        this.log(`Please supply a name for the wallet with the -n argument.`)
-        //this.exit(1)
-        return
-      }
-
       // Initialize the wallet data object that will be saved to a file.
       const walletData = {}
       if (testnet) walletData.network = "testnet"
@@ -66,7 +64,7 @@ class CreateWallet extends Command {
       walletData.hasBalance = []
 
       // Write out the basic information into a json file for other apps to use.
-      const filename = `${__dirname}/../../wallets/${name}.json`
+      //const filename = `${__dirname}/../../wallets/${name}.json`
       await appUtil.saveWallet(filename, walletData)
 
       return walletData
@@ -74,6 +72,16 @@ class CreateWallet extends Command {
       if (err.code !== "EEXIT") console.log(`Error in createWallet().`)
       throw err
     }
+  }
+
+  // Validate the proper flags are passed in.
+  validateFlags(flags) {
+    // Exit if wallet not specified.
+    const name = flags.name
+    if (!name || name === "")
+      throw new Error(`You must specify a wallet with the -n flag.`)
+
+    return true
   }
 }
 
