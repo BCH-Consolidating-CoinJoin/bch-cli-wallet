@@ -25,7 +25,7 @@ module.exports = {
   getUTXOs // Get all UTXOs associated with a wallet.
 }
 
-// Wrap the file save stuff in a Promise.
+// Save a wallet to a file.
 function saveWallet(filename, walletData) {
   return new Promise((resolve, reject) => {
     fs.writeFile(filename, JSON.stringify(walletData, null, 2), function(err) {
