@@ -35,7 +35,8 @@ class GetAddress extends Command {
     if (!name || name === "")
       throw new Error(`You must specify a wallet with the -n flag.`)
 
-    const walletInfo = appUtil.openWallet(name)
+    const filename = `${__dirname}/../../wallets/${name}.json`
+    const walletInfo = appUtil.openWallet(filename)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     // root seed buffer
@@ -68,7 +69,7 @@ class GetAddress extends Command {
     }
 
     // Update the wallet file.
-    await appUtil.saveWallet(name, walletInfo)
+    await appUtil.saveWallet(filename, walletInfo)
 
     // get the cash address
     const newAddress = BITBOX.HDNode.toCashAddress(change)

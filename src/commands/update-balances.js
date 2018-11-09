@@ -23,7 +23,8 @@ class UpdateBalances extends Command {
       const name = flags.name
 
       // Open the wallet data file.
-      let walletInfo = appUtil.openWallet(name)
+      const filename = `${__dirname}/../../wallets/${name}.json`
+      let walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -67,7 +68,8 @@ class UpdateBalances extends Command {
     // Save the data to the wallet JSON file.
     walletInfo.balance = balance
     walletInfo.hasBalance = hasBalance
-    await appUtil.saveWallet(walletInfo.name, walletInfo)
+    const filename = `${__dirname}/../../wallets/${walletInfo.name}.json`
+    await appUtil.saveWallet(filename, walletInfo)
 
     return walletInfo
   }
