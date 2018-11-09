@@ -3,7 +3,7 @@
   Common functions used by several commands.
 
   TODO:
-  
+
 */
 
 "use strict"
@@ -25,32 +25,28 @@ module.exports = {
   getUTXOs // Get all UTXOs associated with a wallet.
 }
 
-// Wrap the file save stuff in a Promise.
-function saveWallet(name, walletData) {
+// Save a wallet to a file.
+function saveWallet(filename, walletData) {
   return new Promise((resolve, reject) => {
-    fs.writeFile(
-      `./wallets/${name}.json`,
-      JSON.stringify(walletData, null, 2),
-      function(err) {
-        if (err) return reject(console.error(err))
+    fs.writeFile(filename, JSON.stringify(walletData, null, 2), function(err) {
+      if (err) return reject(console.error(err))
 
-        //console.log(`${name}.json written successfully.`)
-        return resolve()
-      }
-    )
+      //console.log(`${name}.json written successfully.`)
+      return resolve()
+    })
   })
 }
 
 // Open a wallet by file name.
-function openWallet(name) {
+function openWallet(filename) {
   try {
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
     //delete require.cache[require.resolve(`../../${thisFile}`)]
 
-    const walletInfo = require(`../wallets/${name}.json`)
+    const walletInfo = require(filename)
     return walletInfo
   } catch (err) {
-    throw new Error(`Could not open ${name}.json`)
+    throw new Error(`Could not open ${filename}`)
   }
 }
 

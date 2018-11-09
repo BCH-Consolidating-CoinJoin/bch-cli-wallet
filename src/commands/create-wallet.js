@@ -66,7 +66,8 @@ class CreateWallet extends Command {
       walletData.hasBalance = []
 
       // Write out the basic information into a json file for other apps to use.
-      await appUtil.saveWallet(name, walletData)
+      const filename = `${__dirname}/../../wallets/${name}.json`
+      await appUtil.saveWallet(filename, walletData)
 
       return walletData
     } catch (err) {
