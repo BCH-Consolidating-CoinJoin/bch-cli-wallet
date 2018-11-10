@@ -57,7 +57,7 @@ class CoinJoin extends Command {
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
       // Query the server's standard BCH output.
-      const coinJoinOut = await this.getStdOut(server)
+      const coinJoinOut = await this.getCoinJoinOut(server)
       console.log(`coinJoinOut: ${coinJoinOut}`)
       if (!coinJoinOut) {
         this.log(`Could not connect with CoinJoin server.`)
@@ -130,7 +130,7 @@ Try a server with a lower standard output.`)
   // Queries the server to get the standard BCH output value used by the server.
   // Returns a Number representing the amount of BCH.
   // Throws error if there are issues.
-  async getStdOut(server) {
+  async getCoinJoinOut(server) {
     try {
       const options = {
         method: "GET",
@@ -147,7 +147,7 @@ Try a server with a lower standard output.`)
       const coinJoinOut = result.body.coinJoinOut
       return Number(coinJoinOut)
     } catch (err) {
-      console.log(`Error in coinjoin.js/getStdOut()`)
+      console.log(`Error in coinjoin.js/getCoinJoinOut()`)
       throw err
     }
   }
