@@ -14,12 +14,18 @@ class GetAddress extends Command {
     try {
       const { flags } = this.parse(GetAddress)
 
+      // Validate input flags
+      this.validateFlags(flags)
+
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (flags.testnet)
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      const newAddress = await this.getAddress(flags.name, BITBOX)
+      // Generate an absolute filename from the name.
+      const filename = `${__dirname}/../../wallets/${flags.name}.json`
+
+      const newAddress = await this.getAddress(filename, BITBOX)
 
       // Display the address to the user.
       this.log(`${newAddress}`)
@@ -30,12 +36,8 @@ class GetAddress extends Command {
     }
   }
 
-  async getAddress(name, BITBOX) {
-    // Exit if wallet not specified.
-    if (!name || name === "")
-      throw new Error(`You must specify a wallet with the -n flag.`)
-
-    const filename = `${__dirname}/../../wallets/${name}.json`
+  async getAddress(filename, BITBOX) {
+    //const filename = `${__dirname}/../../wallets/${name}.json`
     const walletInfo = appUtil.openWallet(filename)
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
@@ -76,6 +78,16 @@ class GetAddress extends Command {
     const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
     return newAddress
+  }
+
+  // Validate the proper flags are passed in.
+  validateFlags(flags) {
+    // Exit if wallet not specified.
+    const name = flags.name
+    if (!name || name === "")
+      throw new Error(`You must specify a wallet with the -n flag.`)
+
+    return true
   }
 }
 

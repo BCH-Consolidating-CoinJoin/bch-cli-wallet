@@ -44,7 +44,8 @@ class SendAll extends Command {
       const sendToAddr = flags.sendAddr // The address to send to.
 
       // Open the wallet data file.
-      let walletInfo = appUtil.openWallet(name)
+      const filename = `${__dirname}/../../wallets/${flags.name}.json`
+      let walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -69,7 +70,7 @@ class SendAll extends Command {
     } catch (err) {
       //if (err.message) console.log(err.message)
       //else console.log(`Error in .run: `, err)
-      console.log(`Error in .run: `, err)
+      console.log(`Error in send-all.js/run: `, err)
     }
   }
 

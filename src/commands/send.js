@@ -37,7 +37,8 @@ class Send extends Command {
       const sendToAddr = flags.sendAddr // The address to send to.
 
       // Open the wallet data file.
-      let walletInfo = appUtil.openWallet(name)
+      const filename = `${__dirname}/../../wallets/${name}.json`
+      let walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -67,7 +68,7 @@ class Send extends Command {
 
       // Generate a new address, for sending change to.
       const getAddress = new GetAddress()
-      const changeAddress = await getAddress.getAddress(name, BITBOX)
+      const changeAddress = await getAddress.getAddress(filename, BITBOX)
       //console.log(`changeAddress: ${changeAddress}`)
 
       // Send the BCH, transfer change to the new address
