@@ -98,17 +98,129 @@ Try a server with a lower standard output.`)
       }
 
       // Register as a participant on the Consolidating CoinJoin server
-      const participantOut = this.registerWithCoinJoin(server, participantIn)
+      const participantOut = await this.registerWithCoinJoin(
+        server,
+        participantIn
+      )
       console.log(`participantOut: ${util.inspect(participantOut)}`)
 
-      // Send the BCH, transfer change to the new address
-      //const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
+      // Validate addresses and utxos match.
+      if (utxos.length !== participantOut.inputAddrs.length) {
+        throw new Error(
+          `Number of UTXOs do not match the number of Input Addresses from CoinJoin server.`
+        )
+      }
+
+      // Send UTXOs to the input addresses provided by the CoinJoin.
+      for (var i = 0; i < participantOut.inputAddrs.length; i++) {
+        const thisAddr = participantOut.inputAddrs[i]
+        const thisUtxo = utxos[i]
+
+        const thisTXID = await this.sendUtxo(
+          thisUtxo,
+          thisAddr,
+          walletInfo,
+          BITBOX
+        )
+        console.log(
+          `Sent ${thisUtxo.amount} to CoinJoin server with TXID ${thisTXID}`
+        )
+      }
 
       //console.log(`TXID: ${txid}`)
     } catch (err) {
       //if (err.message) console.log(err.message)
       //else console.log(`Error in .run: `, err)
       console.log(`Error in .run: `, err)
+    }
+  }
+
+  // Send the entire amount of a UTXO, minus transaction fee.
+  async sendUtxo(utxo, sendToAddr, walletInfo, BITBOX) {
+    try {
+      //console.log(`utxo: ${util.inspect(utxo)}`)
+
+      // instance of transaction builder
+      if (walletInfo.network === `testnet`)
+        var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
+      else var transactionBuilder = new BITBOX.TransactionBuilder()
+
+      const originalAmount = utxo.satoshis
+
+      const vout = utxo.vout
+      const txid = utxo.txid
+
+      // add input with txid and index of vout
+      transactionBuilder.addInput(txid, vout)
+
+      // get byte count to calculate fee. paying 1 sat/byte
+      const byteCount = BITBOX.BitcoinCash.getByteCount(
+        { P2PKH: 1 },
+        { P2PKH: 1 }
+      )
+      //console.log(`byteCount: ${byteCount}`)
+      const satoshisPerByte = 1.1
+      const txFee = Math.floor(satoshisPerByte * byteCount)
+      //console.log(`txFee: ${txFee} satoshis\n`)
+
+      // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
+      //const remainder = originalAmount - satoshisToSend - txFee
+      //console.log(`remainder: ${remainder}`)
+      const satoshisToSend = originalAmount - txFee
+
+      // Debugging.
+      /*
+      console.log(
+        `Sending original UTXO amount of ${originalAmount} satoshis from address ${changeAddress}`
+      )
+      console.log(
+        `Sending ${satoshisToSend} satoshis to recieving address ${sendToAddr}`
+      )
+      console.log(
+        `Sending remainder amount of ${remainder} satoshis to new address ${changeAddress}`
+      )
+      console.log(`Paying a transaction fee of ${txFee} satoshis`)
+      */
+
+      // add output w/ address and amount to send
+      transactionBuilder.addOutput(
+        BITBOX.Address.toLegacyAddress(sendToAddr),
+        satoshisToSend
+      )
+
+      // Generate a keypair from the change address.
+      const change = appUtil.changeAddrFromMnemonic(
+        walletInfo,
+        utxo.hdIndex,
+        BITBOX
+      )
+      const keyPair = BITBOX.HDNode.toKeyPair(change)
+
+      // Sign the transaction with the HD node.
+      let redeemScript
+      transactionBuilder.sign(
+        0,
+        keyPair,
+        redeemScript,
+        transactionBuilder.hashTypes.SIGHASH_ALL,
+        originalAmount
+      )
+
+      // build tx
+      const tx = transactionBuilder.build()
+
+      // output rawhex
+      const hex = tx.toHex()
+      //console.log(`Transaction raw hex: `)
+      //console.log(hex)
+
+      // sendRawTransaction to running BCH node
+      const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
+      //console.log(`Transaction ID: ${broadcast}`)
+      return broadcast
+    } catch (err) {
+      console.log(`Error in sendUtxo()`)
+      throw err
     }
   }
 
@@ -127,7 +239,7 @@ Try a server with a lower standard output.`)
       }
 
       const result = await rp(options)
-      console.log(`result.body: ${util.inspect(result.body)}`)
+      //console.log(`result.body: ${util.inspect(result.body)}`)
 
       const participantOut = result.body
       return participantOut
