@@ -25,14 +25,18 @@ describe("create-wallet", () => {
     BITBOX = bitboxMock
   })
 
-  it("should exit with error status if called without name argument.", async () => {
+  it("should exit with error status if called without a filename.", async () => {
     try {
       const createWallet = new CreateWallet()
       await createWallet.createWallet(undefined, BITBOX, undefined)
     } catch (err) {
       //console.error(`Error expected: ${util.inspect(err)}`)
 
-      assert.equal(err.code, "ERR_INVALID_ARG_TYPE", "Should exit as expected.")
+      assert.equal(
+        err.message,
+        "filename required.",
+        "Should throw expected error."
+      )
     }
   })
 

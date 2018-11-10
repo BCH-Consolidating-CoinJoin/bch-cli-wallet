@@ -29,6 +29,8 @@ class CreateWallet extends Command {
   // testnet is a boolean.
   async createWallet(filename, BITBOX, testnet) {
     try {
+      if (!filename || filename === "") throw new Error(`filename required.`)
+
       // Initialize the wallet data object that will be saved to a file.
       const walletData = {}
       if (testnet) walletData.network = "testnet"
