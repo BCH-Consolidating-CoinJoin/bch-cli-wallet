@@ -46,7 +46,7 @@ class CoinJoin extends Command {
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      const walletInfo = appUtil.openWallet(filename)
+      let walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -58,17 +58,17 @@ class CoinJoin extends Command {
 
       // Query the server's standard BCH output.
       const coinJoinOut = await this.getCoinJoinOut(server)
-      console.log(`coinJoinOut: ${coinJoinOut}`)
+      console.log(`CoinJoin standard output: ${coinJoinOut} BCH`)
       if (!coinJoinOut) {
         this.log(`Could not connect with CoinJoin server.`)
         return
       }
 
-      // Calculate the number of output addresses, based on the coinJoinOut.
+      // Calculate the number of output addresses, based on the standarized CoinJoin output.
       const outAddrs = await this.calcOutAddrs(
         coinJoinOut,
         walletInfo.balance,
-        name,
+        filename,
         BITBOX
       )
       console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
@@ -86,7 +86,20 @@ Try a server with a lower standard output.`)
       // Get all UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
       console.log(`utxos: ${util.inspect(utxos)}`)
+
+      console.log(`number of utxos: ${utxos.length}`)
       console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
+
+      // Construct the participant object
+      const participantIn = {
+        outAddrs: outAddrs,
+        numInputs: walletInfo.hasBalance.length,
+        amount: walletInfo.balance
+      }
+
+      // Register as a participant on the Consolidating CoinJoin server
+      const participantOut = this.registerWithCoinJoin(server, participantIn)
+      console.log(`participantOut: ${util.inspect(participantOut)}`)
 
       // Send the BCH, transfer change to the new address
       //const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
@@ -99,11 +112,36 @@ Try a server with a lower standard output.`)
     }
   }
 
+  // Register as a participant with the Consolidating CoinJoin server
+  async registerWithCoinJoin(server, participantIn) {
+    try {
+      const options = {
+        method: "POST",
+        uri: `${server}/address`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          Accept: "application/json"
+        },
+        body: participantIn
+      }
+
+      const result = await rp(options)
+      console.log(`result.body: ${util.inspect(result.body)}`)
+
+      const participantOut = result.body
+      return participantOut
+    } catch (err) {
+      console.log(`Error in coinjoin.js/registerWithCoinJoin()`)
+      throw err
+    }
+  }
+
   // Calulates the number of output addresses needed, based on the standard BCH
   // output of the CoinJoin Server. It then automatically generates that many
   // address and returns an array of BCH addresses.
   // Returns false if the input values don't make sense.
-  async calcOutAddrs(coinJoinOut, balance, name, BITBOX) {
+  async calcOutAddrs(coinJoinOut, balance, filename, BITBOX) {
     try {
       const sanityCheck = balance / coinJoinOut
 
@@ -116,7 +154,7 @@ Try a server with a lower standard output.`)
       const getAddr = new GetAddress()
 
       for (var i = 0; i < numAddrs; i++) {
-        const thisAddr = await getAddr.getAddress(name, BITBOX)
+        const thisAddr = await getAddr.getAddress(filename, BITBOX)
         addrs.push(thisAddr)
       }
 
@@ -134,7 +172,7 @@ Try a server with a lower standard output.`)
     try {
       const options = {
         method: "GET",
-        uri: `${server}/coinJoinOut`,
+        uri: `${server}/coinjoinout`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -143,8 +181,9 @@ Try a server with a lower standard output.`)
       }
 
       const result = await rp(options)
+      //console.log(`result.body: ${util.inspect(result.body)}`)
 
-      const coinJoinOut = result.body.coinJoinOut
+      const coinJoinOut = result.body.coinjoinout
       return Number(coinJoinOut)
     } catch (err) {
       console.log(`Error in coinjoin.js/getCoinJoinOut()`)
