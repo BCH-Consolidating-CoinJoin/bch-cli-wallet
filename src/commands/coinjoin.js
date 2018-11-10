@@ -41,10 +41,12 @@ class CoinJoin extends Command {
       this.validateFlags(flags)
 
       const name = flags.name // Name of the wallet.
+      // Generate an absolute filename from the name.
+      const filename = `${__dirname}/../../wallets/${flags.name}.json`
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      const walletInfo = appUtil.openWallet(name)
+      const walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -55,16 +57,16 @@ class CoinJoin extends Command {
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
       // Query the server's standard BCH output.
-      const stdout = await this.getStdOut(server)
-      console.log(`stdout: ${stdout}`)
-      if (!stdout) {
+      const coinJoinOut = await this.getStdOut(server)
+      console.log(`coinJoinOut: ${coinJoinOut}`)
+      if (!coinJoinOut) {
         this.log(`Could not connect with CoinJoin server.`)
         return
       }
 
-      // Calculate the number of output addresses, based on the stdout.
+      // Calculate the number of output addresses, based on the coinJoinOut.
       const outAddrs = await this.calcOutAddrs(
-        stdout,
+        coinJoinOut,
         walletInfo.balance,
         name,
         BITBOX
@@ -101,9 +103,9 @@ Try a server with a lower standard output.`)
   // output of the CoinJoin Server. It then automatically generates that many
   // address and returns an array of BCH addresses.
   // Returns false if the input values don't make sense.
-  async calcOutAddrs(stdout, balance, name, BITBOX) {
+  async calcOutAddrs(coinJoinOut, balance, name, BITBOX) {
     try {
-      const sanityCheck = balance / stdout
+      const sanityCheck = balance / coinJoinOut
 
       // Less than 1 output address doesn't make sense.
       if (sanityCheck < 1) return false
@@ -132,7 +134,7 @@ Try a server with a lower standard output.`)
     try {
       const options = {
         method: "GET",
-        uri: `${server}/stdout`,
+        uri: `${server}/coinJoinOut`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -142,8 +144,8 @@ Try a server with a lower standard output.`)
 
       const result = await rp(options)
 
-      const stdout = result.body.stdout
-      return Number(stdout)
+      const coinJoinOut = result.body.coinJoinOut
+      return Number(coinJoinOut)
     } catch (err) {
       console.log(`Error in coinjoin.js/getStdOut()`)
       throw err
