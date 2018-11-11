@@ -52,7 +52,8 @@ class SendAll extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (walletInfo.network === "testnet")
-        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+        //var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+        var BITBOX = new BB({ restURL: "http://decatur.hopto.org:3003/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
       // Update balances before sending.
@@ -104,10 +105,11 @@ class SendAll extends Command {
         { P2PKH: utxos.length },
         { P2PKH: 1 }
       )
+      const fee = Math.ceil(1.1 * byteCount)
       //console.log(`fee: ${byteCount}`)
 
       // amount to send to receiver. It's the original amount - 1 sat/byte for tx size
-      const sendAmount = originalAmount - byteCount
+      const sendAmount = originalAmount - fee
       //console.log(`sendAmount: ${sendAmount}`)
 
       // add output w/ address and amount to send

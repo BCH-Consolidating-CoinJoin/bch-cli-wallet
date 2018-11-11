@@ -41,10 +41,12 @@ class CoinJoin extends Command {
       this.validateFlags(flags)
 
       const name = flags.name // Name of the wallet.
+      // Generate an absolute filename from the name.
+      const filename = `${__dirname}/../../wallets/${name}.json`
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      const walletInfo = appUtil.openWallet(name)
+      const walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -54,29 +56,6 @@ class CoinJoin extends Command {
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      // Query the server's standard BCH output.
-      const stdout = await this.getStdOut(server)
-      console.log(`stdout: ${stdout}`)
-      if (!stdout) {
-        this.log(`Could not connect with CoinJoin server.`)
-        return
-      }
-
-      // Calculate the number of output addresses, based on the stdout.
-      const outAddrs = await this.calcOutAddrs(
-        stdout,
-        walletInfo.balance,
-        name,
-        BITBOX
-      )
-      console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
-      if (!outAddrs) {
-        this.log(`
-Less than one output wallet needed.
-Try a server with a lower standard output.`)
-        return
-      }
-
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
       walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
@@ -84,10 +63,8 @@ Try a server with a lower standard output.`)
       // Get all UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
       console.log(`utxos: ${util.inspect(utxos)}`)
-      console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
 
-      // Send the BCH, transfer change to the new address
-      //const txid = await this.sendAllBCH(utxos, sendToAddr, walletInfo, BITBOX)
+      await this.submitToCoinJoin(walletInfo, utxos, BITBOX, server, filename)
 
       //console.log(`TXID: ${txid}`)
     } catch (err) {
@@ -97,13 +74,190 @@ Try a server with a lower standard output.`)
     }
   }
 
+  // Send the contents of a wallet to the Consolidating CoinJoin server.
+  async submitToCoinJoin(walletInfo, utxos, BITBOX, server, filename) {
+    try {
+      // Query the server's standard BCH output.
+      const coinJoinOut = await this.getCoinJoinOut(server)
+      console.log(`CoinJoin standard output: ${coinJoinOut} BCH`)
+      if (!coinJoinOut) {
+        this.log(`Could not connect with CoinJoin server.`)
+        return
+      }
+
+      // Calculate the number of output addresses, based on the standarized CoinJoin output.
+      const outAddrs = await this.calcOutAddrs(
+        coinJoinOut,
+        walletInfo.balance,
+        filename,
+        BITBOX
+      )
+      //console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
+
+      if (!outAddrs) {
+        this.log(`
+Less than one output wallet needed.
+Try a server with a lower standard output.`)
+        return
+      }
+
+      //console.log(`number of utxos: ${utxos.length}`)
+      //console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
+
+      // Construct the participant object
+      const participantIn = {
+        outAddrs: outAddrs,
+        numInputs: walletInfo.hasBalance.length,
+        amount: walletInfo.balance
+      }
+
+      // Register as a participant on the Consolidating CoinJoin server
+      const participantOut = await this.registerWithCoinJoin(
+        server,
+        participantIn
+      )
+      //console.log(`participantOut: ${util.inspect(participantOut)}`)
+
+      // Validate addresses and utxos match.
+      if (utxos.length !== participantOut.inputAddrs.length) {
+        throw new Error(
+          `Number of UTXOs do not match the number of Input Addresses from CoinJoin server.`
+        )
+      }
+
+      const txids = []
+
+      // Send UTXOs to the input addresses provided by the CoinJoin.
+      for (var i = 0; i < participantOut.inputAddrs.length; i++) {
+        const thisAddr = participantOut.inputAddrs[i]
+        const thisUtxo = utxos[i]
+
+        const thisTXID = await this.sendUtxo(
+          thisUtxo,
+          thisAddr,
+          walletInfo,
+          BITBOX
+        )
+
+        txids.push(thisTXID)
+        console.log(
+          `Sent ${thisUtxo.amount} to CoinJoin server with TXID ${thisTXID}`
+        )
+      }
+
+      return txids
+    } catch (err) {
+      console.log(`Error in submitToCoinJoin()`)
+      throw err
+    }
+  }
+
+  // Send the entire amount of a UTXO, minus transaction fee
+  async sendUtxo(utxo, sendToAddr, walletInfo, BITBOX) {
+    try {
+      //console.log(`utxo: ${util.inspect(utxo)}`)
+
+      // instance of transaction builder
+      if (walletInfo.network === `testnet`)
+        var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
+      else var transactionBuilder = new BITBOX.TransactionBuilder()
+
+      const originalAmount = utxo.satoshis
+
+      const vout = utxo.vout
+      const txid = utxo.txid
+
+      // add input with txid and index of vout
+      transactionBuilder.addInput(txid, vout)
+
+      // get byte count to calculate fee. paying 1 sat/byte
+      const byteCount = BITBOX.BitcoinCash.getByteCount(
+        { P2PKH: 1 },
+        { P2PKH: 1 }
+      )
+
+      // Calculate the transaction fee
+      const satoshisPerByte = 1.1
+      const txFee = Math.floor(satoshisPerByte * byteCount)
+      //console.log(`txFee: ${txFee} satoshis\n`)
+
+      // amount to send
+      const satoshisToSend = originalAmount - txFee
+
+      // add output w/ address and amount to send
+      transactionBuilder.addOutput(
+        BITBOX.Address.toLegacyAddress(sendToAddr),
+        satoshisToSend
+      )
+
+      // Generate a keypair from the change address.
+      const change = appUtil.changeAddrFromMnemonic(
+        walletInfo,
+        utxo.hdIndex,
+        BITBOX
+      )
+      const keyPair = BITBOX.HDNode.toKeyPair(change)
+
+      // Sign the transaction with the HD node.
+      let redeemScript
+      transactionBuilder.sign(
+        0,
+        keyPair,
+        redeemScript,
+        transactionBuilder.hashTypes.SIGHASH_ALL,
+        originalAmount
+      )
+
+      // build tx
+      const tx = transactionBuilder.build()
+
+      // output rawhex
+      const hex = tx.toHex()
+      //console.log(`Transaction raw hex: `)
+      //console.log(hex)
+
+      // sendRawTransaction to running BCH node
+      const broadcast = await BITBOX.RawTransactions.sendRawTransaction(hex)
+      //console.log(`Transaction ID: ${broadcast}`)
+      return broadcast
+    } catch (err) {
+      console.log(`Error in sendUtxo()`)
+      throw err
+    }
+  }
+
+  // Register as a participant with the Consolidating CoinJoin server
+  async registerWithCoinJoin(server, participantIn) {
+    try {
+      const options = {
+        method: "POST",
+        uri: `${server}/address`,
+        resolveWithFullResponse: true,
+        json: true,
+        headers: {
+          Accept: "application/json"
+        },
+        body: participantIn
+      }
+
+      const result = await rp(options)
+      //console.log(`result.body: ${util.inspect(result.body)}`)
+
+      const participantOut = result.body
+      return participantOut
+    } catch (err) {
+      console.log(`Error in coinjoin.js/registerWithCoinJoin()`)
+      throw err
+    }
+  }
+
   // Calulates the number of output addresses needed, based on the standard BCH
   // output of the CoinJoin Server. It then automatically generates that many
   // address and returns an array of BCH addresses.
   // Returns false if the input values don't make sense.
-  async calcOutAddrs(stdout, balance, name, BITBOX) {
+  async calcOutAddrs(coinJoinOut, balance, filename, BITBOX) {
     try {
-      const sanityCheck = balance / stdout
+      const sanityCheck = balance / coinJoinOut
 
       // Less than 1 output address doesn't make sense.
       if (sanityCheck < 1) return false
@@ -114,7 +268,7 @@ Try a server with a lower standard output.`)
       const getAddr = new GetAddress()
 
       for (var i = 0; i < numAddrs; i++) {
-        const thisAddr = await getAddr.getAddress(name, BITBOX)
+        const thisAddr = await getAddr.getAddress(filename, BITBOX)
         addrs.push(thisAddr)
       }
 
@@ -128,11 +282,11 @@ Try a server with a lower standard output.`)
   // Queries the server to get the standard BCH output value used by the server.
   // Returns a Number representing the amount of BCH.
   // Throws error if there are issues.
-  async getStdOut(server) {
+  async getCoinJoinOut(server) {
     try {
       const options = {
         method: "GET",
-        uri: `${server}/stdout`,
+        uri: `${server}/coinjoinout`,
         resolveWithFullResponse: true,
         json: true,
         headers: {
@@ -141,11 +295,12 @@ Try a server with a lower standard output.`)
       }
 
       const result = await rp(options)
+      //console.log(`result.body: ${util.inspect(result.body)}`)
 
-      const stdout = result.body.stdout
-      return Number(stdout)
+      const coinJoinOut = result.body.coinjoinout
+      return Number(coinJoinOut)
     } catch (err) {
-      console.log(`Error in coinjoin.js/getStdOut()`)
+      console.log(`Error in coinjoin.js/getCoinJoinOut()`)
       throw err
     }
   }
@@ -167,13 +322,17 @@ Try a server with a lower standard output.`)
 }
 
 CoinJoin.description = `
-Send all BCH in a wallet to another address. This method has a negative impact
-on privacy by linking all addresses in a wallet.
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
+BCH in the wallet. When the CoinJoin is complete, standardized amounts of BCH
+will be sent back to this wallet.
 `
 
 CoinJoin.flags = {
   name: flags.string({ char: "n", description: "Name of wallet" }),
-  sendAddr: flags.string({ char: "a", description: "Cash address to send to" })
+  server: flags.string({
+    char: "s",
+    description: "Consolidating CoinJoin Server URL"
+  })
 }
 
 module.exports = CoinJoin
