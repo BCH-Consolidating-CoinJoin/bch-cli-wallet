@@ -42,7 +42,7 @@ class CoinJoin extends Command {
 
       const name = flags.name // Name of the wallet.
       // Generate an absolute filename from the name.
-      const filename = `${__dirname}/../../wallets/${flags.name}.json`
+      const filename = `${__dirname}/../../wallets/${name}.json`
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
