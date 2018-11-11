@@ -9,6 +9,7 @@
 const assert = require("chai").assert
 const CoinJoin = require("../../src/commands/coinjoin")
 const { bitboxMock } = require("../mocks/bitbox")
+const coinjoinMock = require("../mocks/coinjoin")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const testwallet = require("../mocks/testwallet.json")
 const nock = require("nock") // HTTP mocking
@@ -103,101 +104,47 @@ describe("CoinJoin", () => {
       filename,
       BITBOX
     )
+    //console.log(`result: ${util.inspect(result)}`)
 
-    console.log(`result: ${util.inspect(result)}`)
     assert.isArray(result)
     assert.equal(result.length, 3)
   })
 
-  /*
-  it("should send BCH on testnet", async () => {
+  it("should register with CoinJoin server", async () => {
+    // Mock the Insight URL for unit tests.
+    if (process.env.TEST === "unit") {
+      nock(`${SERVER}`)
+        .post(`/address`)
+        .reply(200, coinjoinMock.mockParticipantOut)
+    }
 
-    const utxos = [
-      {
-        txid:
-          "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
-        vout: 1,
-        scriptPubKey: "76a9142b0379444f2e01905b2dd511644af4f53556edeb88ac",
-        amount: 0.06999752,
-        satoshis: 6999752,
-        height: 1265272,
-        confirmations: 644,
-        legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-        cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
-        hdIndex: 3
-      },
-      {
-        txid:
-          "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
-        vout: 0,
-        scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
-        amount: 0.03,
-        satoshis: 3000000,
-        height: 1265272,
-        confirmations: 733,
-        legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-        cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
-        hdIndex: 3
-      }
+    const outAddrs = [
+      "bchtest:qp59ewqj0gkymj4x436gz56pa2e299uy7vqaus9f5s",
+      "bchtest:qqy6gl9c6rmjnfq66pwmemcpsneenu5ppyysnkgdlq",
+      "bchtest:qr766g7lyycs0jgz95tm9rgzpj86gh9l8ym5esnmqy"
     ]
 
-    const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
+    // Construct the participant object
+    const participantIn = {
+      outAddrs,
+      numInputs: 2,
+      amount: 0.23
+    }
 
-    const sendAll = new SendAll()
-    const txid = await sendAll.sendAllBCH(
-      utxos,
-      sendToAddr,
-      mockedWallet,
-      BITBOX
-    )
+    const result = await coinJoin.registerWithCoinJoin(SERVER, participantIn)
+    //console.log(`result: ${util.inspect(result)}`)
 
-    assert.equal(txid, `mockTXID`)
+    assert.hasAnyKeys(result, [
+      "inputAddrs",
+      "outputAddrs",
+      "txids",
+      "_id",
+      "round",
+      "satoshisReported"
+    ])
+    assert.isArray(result.inputAddrs)
+    assert.isArray(result.outputAddrs)
+    assert.isArray(result.txids)
+    assert.isNumber(result.round)
   })
-/*
-  it("should send BCH on mainnet", async () => {
-    const utxos = [
-      {
-        txid:
-          "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
-        vout: 1,
-        scriptPubKey: "76a9142b0379444f2e01905b2dd511644af4f53556edeb88ac",
-        amount: 0.06999752,
-        satoshis: 6999752,
-        height: 1265272,
-        confirmations: 644,
-        legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-        cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
-        hdIndex: 3
-      },
-      {
-        txid:
-          "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
-        vout: 0,
-        scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
-        amount: 0.03,
-        satoshis: 3000000,
-        height: 1265272,
-        confirmations: 733,
-        legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
-        cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
-        hdIndex: 3
-      }
-    ]
-
-    const sendToAddr = `bchtest:qzsfqeqtdk6plsvglccadkqtf0trf2nyz58090e6tt`
-
-    // Switch to mainnet
-    mockedWallet.network = "mainnet"
-
-    const sendAll = new SendAll()
-    const txid = await sendAll.sendAllBCH(
-      utxos,
-      sendToAddr,
-      mockedWallet,
-      BITBOX
-    )
-
-    assert.equal(txid, `mockTXID`)
-  })
-  */
 })
