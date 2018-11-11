@@ -26,6 +26,7 @@ if (!process.env.TEST) process.env.TEST = "unit"
 describe("update-balances", () => {
   let BITBOX
   let mockedWallet
+  const filename = `${__dirname}/../../wallets/test123.json`
 
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
@@ -105,7 +106,11 @@ describe("update-balances", () => {
       BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
 
     const updateBalances = new UpdateBalances()
-    const walletInfo = await updateBalances.updateBalances(mockedWallet, BITBOX)
+    const walletInfo = await updateBalances.updateBalances(
+      filename,
+      mockedWallet,
+      BITBOX
+    )
     //console.log(`walletInfo: ${JSON.stringify(walletInfo, null, 2)}`)
 
     assert.hasAllKeys(walletInfo, [
