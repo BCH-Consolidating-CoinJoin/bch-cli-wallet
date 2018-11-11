@@ -152,7 +152,7 @@ Try a server with a lower standard output.`)
     }
   }
 
-  // Send the entire amount of a UTXO, minus transaction fee.
+  // Send the entire amount of a UTXO, minus transaction fee
   async sendUtxo(utxo, sendToAddr, walletInfo, BITBOX) {
     try {
       //console.log(`utxo: ${util.inspect(utxo)}`)
