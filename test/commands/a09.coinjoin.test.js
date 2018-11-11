@@ -13,6 +13,7 @@ const coinjoinMock = require("../mocks/coinjoin")
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const testwallet = require("../mocks/testwallet.json")
 const nock = require("nock") // HTTP mocking
+const sinon = require("sinon") // Function-level mocking
 
 const SERVER = "http://localhost:5000"
 
@@ -31,12 +32,14 @@ describe("CoinJoin", () => {
   let BITBOX
   let mockedWallet
   let coinJoin
+  let filename
 
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
     mockedWallet = Object.assign({}, testwallet) // Clone the testwallet
     coinJoin = new CoinJoin()
+    filename = `${__dirname}/../../wallets/test123.json`
   })
 
   it("should throw error if name is not supplied.", () => {
@@ -96,7 +99,6 @@ describe("CoinJoin", () => {
 
     const coinJoinOut = 0.01
     const balance = 0.023
-    const filename = `${__dirname}/../../wallets/test123.json`
 
     const result = await coinJoin.calcOutAddrs(
       coinJoinOut,
@@ -173,5 +175,57 @@ describe("CoinJoin", () => {
     //console.log(`result: ${util.inspect(result)}`)
 
     assert.isString(result)
+  })
+
+  it("should throw error if mismatch between utxos and input addresses", async () => {
+    try {
+      // Mock the subfunction dependencies already tested.
+      coinJoin.getCoinJoinOut = sinon.stub().returns(0.01)
+      coinJoin.calcOutAddrs = sinon.stub().returns(coinjoinMock.mockOutputAddrs)
+      coinJoin.registerWithCoinJoin = sinon
+        .stub()
+        .returns(coinjoinMock.mockParticipantOut)
+      coinJoin.sendUtxo = sinon.stub().returns(`mockTXID`)
+
+      await coinJoin.submitToCoinJoin(
+        mockedWallet,
+        [coinjoinMock.mockUtxos[0]],
+        BITBOX,
+        SERVER,
+        filename
+      )
+
+      //console.log(`result: ${util.inspect(result)}`)
+      assert.equal(true, false, "Test not expected to pass!")
+    } catch (err) {
+      //console.log(`err: ${util.inspect(err)}`)
+
+      assert.include(
+        err.message,
+        "Number of UTXOs do not match the number of Input Addresses from CoinJoin server."
+      )
+    }
+  })
+
+  it("should submit to CoinJoin server", async () => {
+    // Mock the subfunction dependencies already tested.
+    coinJoin.getCoinJoinOut = sinon.stub().returns(0.01)
+    coinJoin.calcOutAddrs = sinon.stub().returns(coinjoinMock.mockOutputAddrs)
+    coinJoin.registerWithCoinJoin = sinon
+      .stub()
+      .returns(coinjoinMock.mockParticipantOut)
+    coinJoin.sendUtxo = sinon.stub().returns(`mockTXID`)
+
+    const result = await coinJoin.submitToCoinJoin(
+      mockedWallet,
+      coinjoinMock.mockUtxos,
+      BITBOX,
+      SERVER,
+      filename
+    )
+    //console.log(`result: ${util.inspect(result)}`)
+
+    assert.isArray(result)
+    assert.isString(result[0])
   })
 })

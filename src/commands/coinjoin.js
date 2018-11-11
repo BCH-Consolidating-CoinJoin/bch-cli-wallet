@@ -56,7 +56,15 @@ class CoinJoin extends Command {
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
-      await this.submitToCoinJoin(walletInfo, BITBOX, server, filename)
+      // Update balances before sending.
+      const updateBalances = new UpdateBalances()
+      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
+
+      // Get all UTXOs controlled by this wallet.
+      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
+      console.log(`utxos: ${util.inspect(utxos)}`)
+
+      await this.submitToCoinJoin(walletInfo, utxos, BITBOX, server, filename)
 
       //console.log(`TXID: ${txid}`)
     } catch (err) {
@@ -67,7 +75,7 @@ class CoinJoin extends Command {
   }
 
   // Send the contents of a wallet to the Consolidating CoinJoin server.
-  async submitToCoinJoin(walletInfo, BITBOX, server, filename) {
+  async submitToCoinJoin(walletInfo, utxos, BITBOX, server, filename) {
     try {
       // Query the server's standard BCH output.
       const coinJoinOut = await this.getCoinJoinOut(server)
@@ -84,7 +92,8 @@ class CoinJoin extends Command {
         filename,
         BITBOX
       )
-      console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
+      //console.log(`OutAddrs: ${util.inspect(outAddrs)}`)
+
       if (!outAddrs) {
         this.log(`
 Less than one output wallet needed.
@@ -92,16 +101,8 @@ Try a server with a lower standard output.`)
         return
       }
 
-      // Update balances before sending.
-      const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
-
-      // Get all UTXOs controlled by this wallet.
-      const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
-      console.log(`utxos: ${util.inspect(utxos)}`)
-
-      console.log(`number of utxos: ${utxos.length}`)
-      console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
+      //console.log(`number of utxos: ${utxos.length}`)
+      //console.log(`number of input addresses: ${walletInfo.hasBalance.length}`)
 
       // Construct the participant object
       const participantIn = {
@@ -115,7 +116,7 @@ Try a server with a lower standard output.`)
         server,
         participantIn
       )
-      console.log(`participantOut: ${util.inspect(participantOut)}`)
+      //console.log(`participantOut: ${util.inspect(participantOut)}`)
 
       // Validate addresses and utxos match.
       if (utxos.length !== participantOut.inputAddrs.length) {
@@ -123,6 +124,8 @@ Try a server with a lower standard output.`)
           `Number of UTXOs do not match the number of Input Addresses from CoinJoin server.`
         )
       }
+
+      const txids = []
 
       // Send UTXOs to the input addresses provided by the CoinJoin.
       for (var i = 0; i < participantOut.inputAddrs.length; i++) {
@@ -135,10 +138,14 @@ Try a server with a lower standard output.`)
           walletInfo,
           BITBOX
         )
+
+        txids.push(thisTXID)
         console.log(
           `Sent ${thisUtxo.amount} to CoinJoin server with TXID ${thisTXID}`
         )
       }
+
+      return txids
     } catch (err) {
       console.log(`Error in submitToCoinJoin()`)
       throw err
@@ -315,13 +322,17 @@ Try a server with a lower standard output.`)
 }
 
 CoinJoin.description = `
-Send all BCH in a wallet to another address. This method has a negative impact
-on privacy by linking all addresses in a wallet.
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
+BCH in the wallet. When the CoinJoin is complete, standardized amounts of BCH
+will be sent back to this wallet.
 `
 
 CoinJoin.flags = {
   name: flags.string({ char: "n", description: "Name of wallet" }),
-  sendAddr: flags.string({ char: "a", description: "Cash address to send to" })
+  server: flags.string({
+    char: "s",
+    description: "Consolidating CoinJoin Server URL"
+  })
 }
 
 module.exports = CoinJoin
