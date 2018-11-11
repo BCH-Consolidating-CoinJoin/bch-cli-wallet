@@ -46,7 +46,7 @@ class CoinJoin extends Command {
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      let walletInfo = appUtil.openWallet(filename)
+      const walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -56,6 +56,19 @@ class CoinJoin extends Command {
         var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
+      await this.submitToCoinJoin(walletInfo, BITBOX, server, filename)
+
+      //console.log(`TXID: ${txid}`)
+    } catch (err) {
+      //if (err.message) console.log(err.message)
+      //else console.log(`Error in .run: `, err)
+      console.log(`Error in .run: `, err)
+    }
+  }
+
+  // Send the contents of a wallet to the Consolidating CoinJoin server.
+  async submitToCoinJoin(walletInfo, BITBOX, server, filename) {
+    try {
       // Query the server's standard BCH output.
       const coinJoinOut = await this.getCoinJoinOut(server)
       console.log(`CoinJoin standard output: ${coinJoinOut} BCH`)
@@ -126,12 +139,9 @@ Try a server with a lower standard output.`)
           `Sent ${thisUtxo.amount} to CoinJoin server with TXID ${thisTXID}`
         )
       }
-
-      //console.log(`TXID: ${txid}`)
     } catch (err) {
-      //if (err.message) console.log(err.message)
-      //else console.log(`Error in .run: `, err)
-      console.log(`Error in .run: `, err)
+      console.log(`Error in submitToCoinJoin()`)
+      throw err
     }
   }
 
