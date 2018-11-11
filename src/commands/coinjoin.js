@@ -168,29 +168,14 @@ Try a server with a lower standard output.`)
         { P2PKH: 1 },
         { P2PKH: 1 }
       )
-      //console.log(`byteCount: ${byteCount}`)
+
+      // Calculate the transaction fee
       const satoshisPerByte = 1.1
       const txFee = Math.floor(satoshisPerByte * byteCount)
       //console.log(`txFee: ${txFee} satoshis\n`)
 
-      // amount to send back to the sending address. It's the original amount - 1 sat/byte for tx size
-      //const remainder = originalAmount - satoshisToSend - txFee
-      //console.log(`remainder: ${remainder}`)
+      // amount to send
       const satoshisToSend = originalAmount - txFee
-
-      // Debugging.
-      /*
-      console.log(
-        `Sending original UTXO amount of ${originalAmount} satoshis from address ${changeAddress}`
-      )
-      console.log(
-        `Sending ${satoshisToSend} satoshis to recieving address ${sendToAddr}`
-      )
-      console.log(
-        `Sending remainder amount of ${remainder} satoshis to new address ${changeAddress}`
-      )
-      console.log(`Paying a transaction fee of ${txFee} satoshis`)
-      */
 
       // add output w/ address and amount to send
       transactionBuilder.addOutput(

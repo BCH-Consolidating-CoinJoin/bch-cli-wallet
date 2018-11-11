@@ -147,4 +147,31 @@ describe("CoinJoin", () => {
     assert.isArray(result.txids)
     assert.isNumber(result.round)
   })
+
+  it("should send UTXO", async () => {
+    const utxo = {
+      txid: "26564508facb32a5f6893cb7bdfd2dcc264b248a1aa7dd0a572117667418ae5b",
+      vout: 0,
+      scriptPubKey: "76a9148687a941392d82bf0af208779c3b147e2fbadafa88ac",
+      amount: 0.03,
+      satoshis: 3000000,
+      height: 1265272,
+      confirmations: 733,
+      legacyAddress: "mjSPWfCwCgHZC27nS8GQ4AXz9ehhb2GFqz",
+      cashAddress: "bchtest:qq4sx72yfuhqryzm9h23zez27n6n24hdavvfqn2ma3",
+      hdIndex: 2
+    }
+
+    const sendToAddr = "bchtest:qzu2kpj7vgxnju2c9awnzssrl28qc0u5fvy3lqq59v"
+
+    const result = await coinJoin.sendUtxo(
+      utxo,
+      sendToAddr,
+      mockedWallet,
+      BITBOX
+    )
+    //console.log(`result: ${util.inspect(result)}`)
+
+    assert.isString(result)
+  })
 })
