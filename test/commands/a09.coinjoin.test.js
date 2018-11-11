@@ -74,6 +74,41 @@ describe("CoinJoin", () => {
     assert.isNumber(result)
   })
 
+  it("returns false for less than 1 output address", async () => {
+    const coinJoinOut = 0.01
+    const balance = 0.009
+
+    const result = await coinJoin.calcOutAddrs(
+      coinJoinOut,
+      balance,
+      undefined,
+      BITBOX
+    )
+
+    assert.equal(result, false, "Expected false returned")
+  })
+
+  it("returns expected number of output address", async () => {
+    // Use the real library if this is not a unit test.
+    if (process.env.TEST !== "unit")
+      BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
+
+    const coinJoinOut = 0.01
+    const balance = 0.023
+    const filename = `${__dirname}/../../wallets/test123.json`
+
+    const result = await coinJoin.calcOutAddrs(
+      coinJoinOut,
+      balance,
+      filename,
+      BITBOX
+    )
+
+    console.log(`result: ${util.inspect(result)}`)
+    assert.isArray(result)
+    assert.equal(result.length, 3)
+  })
+
   /*
   it("should send BCH on testnet", async () => {
 
