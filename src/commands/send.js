@@ -50,7 +50,11 @@ class Send extends Command {
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
+      walletInfo = await updateBalances.updateBalances(
+        filename,
+        walletInfo,
+        BITBOX
+      )
 
       // Get info on UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
