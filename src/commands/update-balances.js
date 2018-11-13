@@ -24,7 +24,8 @@ class UpdateBalances extends Command {
 
       // Open the wallet data file.
       const filename = `${__dirname}/../../wallets/${name}.json`
-      let walletInfo = appUtil.openWallet(filename)
+
+      const walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -78,6 +79,7 @@ class UpdateBalances extends Command {
   async getAddressData(walletInfo, BITBOX) {
     //const numberOfAddresses = walletInfo.nextAddress - 1
     const numberOfAddresses = walletInfo.nextAddress
+    console.log(`Checking ${numberOfAddresses} addresses.`)
 
     const balances = []
     for (var i = 0; i < numberOfAddresses; i++) {
