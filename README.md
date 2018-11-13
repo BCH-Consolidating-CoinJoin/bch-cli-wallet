@@ -41,6 +41,7 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`bch-cli-wallet coinjoin`](#bch-cli-wallet-coinjoin)
 * [`bch-cli-wallet create-wallet`](#bch-cli-wallet-create-wallet)
 * [`bch-cli-wallet get-address`](#bch-cli-wallet-get-address)
 * [`bch-cli-wallet hello`](#bch-cli-wallet-hello)
@@ -49,6 +50,26 @@ USAGE
 * [`bch-cli-wallet send`](#bch-cli-wallet-send)
 * [`bch-cli-wallet send-all`](#bch-cli-wallet-send-all)
 * [`bch-cli-wallet update-balances`](#bch-cli-wallet-update-balances)
+
+## `bch-cli-wallet coinjoin`
+
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
+
+```
+USAGE
+  $ bch-cli-wallet coinjoin
+
+OPTIONS
+  -n, --name=name      Name of wallet
+  -s, --server=server  Consolidating CoinJoin Server URL
+
+DESCRIPTION
+  Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
+  BCH in the wallet. When the CoinJoin is complete, standardized amounts of BCH
+  will be sent back to this wallet.
+```
+
+_See code: [src/commands/coinjoin.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/coinjoin.js)_
 
 ## `bch-cli-wallet create-wallet`
 
