@@ -55,7 +55,7 @@ class SendAll extends Command {
         //var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
         var BITBOX = new BB({ restURL: "http://decatur.hopto.org:3003/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
-      /*
+
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
       walletInfo = await updateBalances.updateBalances(
@@ -63,7 +63,7 @@ class SendAll extends Command {
         walletInfo,
         BITBOX
       )
-*/
+
       // Get all UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
       //console.log(`utxos: ${util.inspect(utxos)}`)
