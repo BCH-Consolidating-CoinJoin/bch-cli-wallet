@@ -16,6 +16,11 @@
   -Request the needed input addresses, and submit the output addresses.
   -Send BCH to the input addresses.
 
+  Dev Note: The current implementation sends the contents of each address to the
+  server as a separate transaction. This increases the transaction costs, but
+  allows future versions to incorporate random send times. This will future
+  obfuscate identity.
+
 */
 
 "use strict"
@@ -46,7 +51,7 @@ class CoinJoin extends Command {
       const server = flags.server // The address to send to.
 
       // Open the wallet data file.
-      const walletInfo = appUtil.openWallet(filename)
+      let walletInfo = appUtil.openWallet(filename)
       walletInfo.name = name
 
       console.log(`Existing balance: ${walletInfo.balance} BCH`)
@@ -58,7 +63,11 @@ class CoinJoin extends Command {
 
       // Update balances before sending.
       const updateBalances = new UpdateBalances()
-      walletInfo = await updateBalances.updateBalances(walletInfo, BITBOX)
+      walletInfo = await updateBalances.updateBalances(
+        filename,
+        walletInfo,
+        BITBOX
+      )
 
       // Get all UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
@@ -116,7 +125,7 @@ Try a server with a lower standard output.`)
         server,
         participantIn
       )
-      //console.log(`participantOut: ${util.inspect(participantOut)}`)
+      console.log(`participantOut: ${util.inspect(participantOut)}`)
 
       // Validate addresses and utxos match.
       if (utxos.length !== participantOut.inputAddrs.length) {
@@ -132,12 +141,13 @@ Try a server with a lower standard output.`)
         const thisAddr = participantOut.inputAddrs[i]
         const thisUtxo = utxos[i]
 
-        const thisTXID = await this.sendUtxo(
-          thisUtxo,
-          thisAddr,
-          walletInfo,
-          BITBOX
-        )
+        //const thisTXID = await this.sendUtxo(
+        //  thisUtxo,
+        //  thisAddr,
+        //  walletInfo,
+        //  BITBOX
+        //)
+        const thisTXID = "test"
 
         txids.push(thisTXID)
         console.log(
