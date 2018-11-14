@@ -41,7 +41,7 @@ function saveWallet(filename, walletData) {
 function openWallet(filename) {
   try {
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
-    //delete require.cache[require.resolve(`../../${thisFile}`)]
+    delete require.cache[require.resolve(filename)]
 
     const walletInfo = require(filename)
     return walletInfo
