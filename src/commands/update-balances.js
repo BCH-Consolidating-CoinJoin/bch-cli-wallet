@@ -156,7 +156,7 @@ class UpdateBalances extends Command {
     for (var i = 0; i < hasBalance.length; i++) {
       const thisHasBalance = hasBalance[i]
 
-      total += thisHasBalance.balance
+      total += thisHasBalance.balance + thisHasBalance.unconfirmedBalance
     }
 
     // Convert to satoshis
