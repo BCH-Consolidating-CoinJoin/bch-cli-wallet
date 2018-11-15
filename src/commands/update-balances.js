@@ -150,7 +150,7 @@ class UpdateBalances extends Command {
   }
 
   // Sums the confirmed balances in the hasBalance array to create a single,
-  // aggrigate balance.
+  // aggrigate balance
   sumConfirmedBalances(hasBalance) {
     let total = 0
     for (var i = 0; i < hasBalance.length; i++) {
