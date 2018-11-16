@@ -1,6 +1,7 @@
 /*
   TODO:
-
+  --sendAllBCH throws error when utxos are undefined
+  --sendAllBCH throws error when trying to send 0 satoshis.
 
 */
 
