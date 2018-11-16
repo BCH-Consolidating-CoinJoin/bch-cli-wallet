@@ -84,6 +84,8 @@ class SendAll extends Command {
     try {
       //console.log(`utxos: ${util.inspect(utxos)}`)
 
+      if (!Array.isArray(utxos)) throw new Error(`utxos must be an array`)
+
       // instance of transaction builder
       if (walletInfo.network === `testnet`)
         var transactionBuilder = new BITBOX.TransactionBuilder("testnet")
@@ -100,6 +102,9 @@ class SendAll extends Command {
 
         transactionBuilder.addInput(utxo.txid, utxo.vout)
       }
+
+      if (originalAmount < 1)
+        throw new Error(`Original amount is zero. No BCH to send.`)
 
       // original amount of satoshis in vin
       //console.log(`originalAmount: ${originalAmount}`)
