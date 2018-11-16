@@ -149,6 +149,8 @@ class UpdateBalances extends Command {
     return hasBalance
   }
 
+  // TODO: Needs to return an object instead of a single value. Needs to return
+  // total confirmed balance and total unconfirmed balance.
   // Sums the confirmed balances in the hasBalance array to create a single,
   // aggrigate balance
   sumConfirmedBalances(hasBalance) {
