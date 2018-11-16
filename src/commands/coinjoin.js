@@ -117,7 +117,7 @@ Try a server with a lower standard output.`)
       const participantIn = {
         outAddrs: outAddrs,
         numInputs: walletInfo.hasBalance.length,
-        amount: walletInfo.balance
+        amount: walletInfo.balance * 100000000
       }
 
       // Register as a participant on the Consolidating CoinJoin server
@@ -141,13 +141,13 @@ Try a server with a lower standard output.`)
         const thisAddr = participantOut.inputAddrs[i]
         const thisUtxo = utxos[i]
 
-        //const thisTXID = await this.sendUtxo(
-        //  thisUtxo,
-        //  thisAddr,
-        //  walletInfo,
-        //  BITBOX
-        //)
-        const thisTXID = "test"
+        const thisTXID = await this.sendUtxo(
+          thisUtxo,
+          thisAddr,
+          walletInfo,
+          BITBOX
+        )
+        //const thisTXID = "test"
 
         txids.push(thisTXID)
         console.log(
