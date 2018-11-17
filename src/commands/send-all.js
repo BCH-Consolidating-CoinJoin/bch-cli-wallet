@@ -52,8 +52,7 @@ class SendAll extends Command {
 
       // Determine if this is a testnet wallet or a mainnet wallet.
       if (walletInfo.network === "testnet")
-        //var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
-        var BITBOX = new BB({ restURL: "http://decatur.hopto.org:3003/v1/" })
+        var BITBOX = new BB({ restURL: "https://trest.bitcoin.com/v1/" })
       else var BITBOX = new BB({ restURL: "https://rest.bitcoin.com/v1/" })
 
       // Update balances before sending.
@@ -184,8 +183,11 @@ class SendAll extends Command {
 }
 
 SendAll.description = `
-Send all BCH in a wallet to another address. This method has a negative impact
-on privacy by linking all addresses in a wallet.
+Send all BCH in a wallet to another address. **Degrades Privacy**
+This method has a negative impact on privacy by linking all addresses in a
+wallet. If privacy of a concern, CoinJoin should be used.
+This is a good article describing the privacy concerns:
+https://bit.ly/2TnhdVc
 `
 
 SendAll.flags = {

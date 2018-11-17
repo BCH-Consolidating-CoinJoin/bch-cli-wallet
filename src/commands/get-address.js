@@ -75,7 +75,7 @@ class GetAddress extends Command {
 
     // get the cash address
     const newAddress = BITBOX.HDNode.toCashAddress(change)
-    const legacy = BITBOX.HDNode.toLegacyAddress(change)
+    //const legacy = BITBOX.HDNode.toLegacyAddress(change)
 
     return newAddress
   }

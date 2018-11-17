@@ -10,9 +10,9 @@ class HelloCommand extends Command {
   }
 }
 
-HelloCommand.description = `Describe the command here
+HelloCommand.description = `Example command from oclif
 ...
-Extra documentation goes here
+Leaving it here for future reference in development.
 `
 
 HelloCommand.flags = {
