@@ -117,6 +117,8 @@ describe("update-balances", () => {
       "network",
       "mnemonic",
       "balance",
+      "balanceConfirmed",
+      "balanceUnconfirmed",
       "nextAddress",
       "hasBalance",
       "rootAddress",

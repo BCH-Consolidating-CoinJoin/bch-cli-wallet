@@ -64,10 +64,12 @@ class UpdateBalances extends Command {
     const hasBalance = this.generateHasBalance(addressData)
 
     // Sum all the balances in hasBalance to calculate total balance.
-    const balance = this.sumConfirmedBalances(hasBalance)
+    const balance = this.sumConfirmedBalances(hasBalance, true)
 
     // Save the data to the wallet JSON file.
-    walletInfo.balance = balance
+    walletInfo.balance = balance.totalConfirmed + balance.totalUnconfirmed
+    walletInfo.balanceConfirmed = balance.totalConfirmed
+    walletInfo.balanceUnconfirmed = balance.totalUnconfirmed
     walletInfo.hasBalance = hasBalance
     await appUtil.saveWallet(filename, walletInfo)
 
@@ -151,19 +153,32 @@ class UpdateBalances extends Command {
 
   // Sums the confirmed balances in the hasBalance array to create a single,
   // aggrigate balance
-  sumConfirmedBalances(hasBalance) {
+  sumConfirmedBalances(hasBalance, verbose) {
     let total = 0
+    let totalConfirmed = 0
+    let totalUnconfirmed = 0
+
     for (var i = 0; i < hasBalance.length; i++) {
       const thisHasBalance = hasBalance[i]
 
       total += thisHasBalance.balance + thisHasBalance.unconfirmedBalance
+      totalConfirmed += thisHasBalance.balance
+      totalUnconfirmed += thisHasBalance.unconfirmedBalance
     }
 
+    const ONE_COIN = 100000000
+
     // Convert to satoshis
-    const totalSatoshis = Math.floor(total * 100000000)
+    const totalSatoshis = Math.floor(total * ONE_COIN)
+    const totalConfirmedSatoshis = Math.floor(total * ONE_COIN)
+    const totalUnconfirmedSatoshis = Math.floor(total * ONE_COIN)
 
     // Convert back to BCH
-    total = totalSatoshis / 100000000
+    total = totalSatoshis / ONE_COIN
+    totalConfirmed = totalConfirmedSatoshis / ONE_COIN
+    totalUnconfirmed = totalUnconfirmedSatoshis / ONE_COIN
+
+    if (verbose) return { totalConfirmed, totalUnconfirmed }
 
     return total
   }
