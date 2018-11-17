@@ -170,8 +170,8 @@ class UpdateBalances extends Command {
 
     // Convert to satoshis
     const totalSatoshis = Math.floor(total * ONE_COIN)
-    const totalConfirmedSatoshis = Math.floor(total * ONE_COIN)
-    const totalUnconfirmedSatoshis = Math.floor(total * ONE_COIN)
+    const totalConfirmedSatoshis = Math.floor(totalConfirmed * ONE_COIN)
+    const totalUnconfirmedSatoshis = Math.floor(totalUnconfirmed * ONE_COIN)
 
     // Convert back to BCH
     total = totalSatoshis / ONE_COIN
