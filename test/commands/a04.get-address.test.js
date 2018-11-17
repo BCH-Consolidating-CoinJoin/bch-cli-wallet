@@ -23,24 +23,37 @@ if (!process.env.TEST) process.env.TEST = "unit"
 
 describe("get-address", () => {
   let BITBOX
+  const getAddress = new GetAddress()
 
   beforeEach(() => {
     // By default, use the mocking library instead of live calls.
     BITBOX = bitboxMock
   })
 
-  it("should throw error if name is not supplied.", async () => {
+  // getAddress can be called directly by other programs, so this is tested separately.
+  it("getAddress should throw error if name is not supplied.", async () => {
     try {
-      const getAddress = new GetAddress()
       await getAddress.getAddress(undefined, BITBOX)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
     }
   })
 
+  // This validation function is called when the program is executed from the command line.
+  it("validateFlags() should throw error if name is not supplied.", () => {
+    try {
+      getAddress.validateFlags({})
+    } catch (err) {
+      assert.include(
+        err.message,
+        `You must specify a wallet with the -n flag`,
+        "Expected error message."
+      )
+    }
+  })
+
   it("should throw error if wallet file not found.", async () => {
     try {
-      const getAddress = new GetAddress()
       await getAddress.getAddress(`doesnotexist`, BITBOX)
     } catch (err) {
       assert.include(err.message, `Could not open`, "Expected error message.")
@@ -67,7 +80,6 @@ describe("get-address", () => {
     const firstAddressIndex = initialWalletInfo.nextAddress
 
     // Generate a new address
-    const getAddress = new GetAddress()
     await getAddress.getAddress(filename, BITBOX)
 
     // Delete the cached copy of the wallet. This allows testing of list-wallets.
