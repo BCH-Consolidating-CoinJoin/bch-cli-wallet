@@ -125,7 +125,7 @@ Try a server with a lower standard output.`)
         server,
         participantIn
       )
-      console.log(`participantOut: ${util.inspect(participantOut)}`)
+      //console.log(`participantOut: ${util.inspect(participantOut)}`)
 
       // Validate addresses and utxos match.
       if (utxos.length !== participantOut.inputAddrs.length) {
@@ -322,10 +322,10 @@ Try a server with a lower standard output.`)
     if (!name || name === "")
       throw new Error(`You must specify a wallet with the -n flag.`)
 
-    //const server = flags.server
-    //if (!server || server === "")
-    //  throw new Error(`You must specify the CoinJoin server.`)
-    flags.server = "http://localhost:5000"
+    const server = flags.server
+    if (!server || server === "")
+      throw new Error(`You must specify the CoinJoin server.`)
+    //flags.server = "http://localhost:5000"
 
     return true
   }

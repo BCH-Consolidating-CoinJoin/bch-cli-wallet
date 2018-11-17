@@ -54,9 +54,26 @@ describe("CoinJoin", () => {
     }
   })
 
+  it("should throw error if server is not supplied.", () => {
+    try {
+      const flags = {
+        name: `testwallet`
+      }
+
+      coinJoin.validateFlags(flags)
+    } catch (err) {
+      assert.include(
+        err.message,
+        `You must specify the CoinJoin server.`,
+        "Expected error message."
+      )
+    }
+  })
+
   it("should return true if all flags are supplied.", () => {
     const flags = {
-      name: `testwallet`
+      name: `testwallet`,
+      server: `http://localhost:5000`
     }
 
     const result = coinJoin.validateFlags(flags)
