@@ -53,7 +53,7 @@ USAGE
 
 ## `bch-cli-wallet coinjoin`
 
-Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
 
 ```
 USAGE
@@ -64,8 +64,8 @@ OPTIONS
   -s, --server=server  Consolidating CoinJoin Server URL
 
 DESCRIPTION
-  Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
-  BCH in the wallet. When the CoinJoin is complete, standardized amounts of BCH
+  Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
+  When the CoinJoin is complete, standardized amounts of BCH
   will be sent back to this wallet.
 ```
 
@@ -102,7 +102,7 @@ _See code: [src/commands/get-address.js](https://github.com/christroutner/bch-cl
 
 ## `bch-cli-wallet hello`
 
-Describe the command here
+Example command from oclif
 
 ```
 USAGE
@@ -113,7 +113,7 @@ OPTIONS
 
 DESCRIPTION
   ...
-  Extra documentation goes here
+  Leaving it here for future reference in development.
 ```
 
 _See code: [src/commands/hello.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/hello.js)_
@@ -164,7 +164,7 @@ _See code: [src/commands/send.js](https://github.com/christroutner/bch-cli-walle
 
 ## `bch-cli-wallet send-all`
 
-Send all BCH in a wallet to another address. This method has a negative impact
+Send all BCH in a wallet to another address. **Degrades Privacy**
 
 ```
 USAGE
@@ -175,8 +175,11 @@ OPTIONS
   -n, --name=name          Name of wallet
 
 DESCRIPTION
-  Send all BCH in a wallet to another address. This method has a negative impact
-  on privacy by linking all addresses in a wallet.
+  Send all BCH in a wallet to another address. **Degrades Privacy**
+  This method has a negative impact on privacy by linking all addresses in a
+  wallet. If privacy of a concern, CoinJoin should be used.
+  [This is a good article](http://bitcoinism.blogspot.com/2013/07/reclaiming-financial-privacy-with-hd.html)
+  describing the privacy concerns.
 ```
 
 _See code: [src/commands/send-all.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send-all.js)_
