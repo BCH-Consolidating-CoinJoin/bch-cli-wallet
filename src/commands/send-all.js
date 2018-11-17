@@ -186,8 +186,8 @@ SendAll.description = `
 Send all BCH in a wallet to another address. **Degrades Privacy**
 This method has a negative impact on privacy by linking all addresses in a
 wallet. If privacy of a concern, CoinJoin should be used.
-[This is a good article](http://bitcoinism.blogspot.com/2013/07/reclaiming-financial-privacy-with-hd.html)
-describing the privacy concerns.
+This is a good article describing the privacy concerns:
+https://bit.ly/2TnhdVc
 `
 
 SendAll.flags = {
