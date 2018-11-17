@@ -332,8 +332,8 @@ Try a server with a lower standard output.`)
 }
 
 CoinJoin.description = `
-Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize the
-BCH in the wallet. When the CoinJoin is complete, standardized amounts of BCH
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
+When the CoinJoin is complete, standardized amounts of BCH
 will be sent back to this wallet.
 `
 
