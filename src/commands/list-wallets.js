@@ -26,7 +26,7 @@ class ListWallets extends Command {
 
   // Parse data from the wallets directory into a formatted array.
   parseWallets() {
-    const fileList = shelljs.ls("wallets/*.json")
+    const fileList = shelljs.ls(`${__dirname}/../../wallets/*.json`)
     //console.log(`fileList: ${JSON.stringify(fileList, null, 2)}`)
 
     if (fileList.length === 0) {
@@ -39,14 +39,22 @@ class ListWallets extends Command {
     // Loop through each wallet returned.
     for (let i = 0; i < fileList.length; i++) {
       const thisFile = fileList[i]
+      //console.log(`thisFile: ${thisFile}`)
 
       const lastPart = thisFile.indexOf(`.json`)
-      const name = thisFile.slice(8, lastPart)
+
+      const lastSlash = thisFile.indexOf(`wallets/`)
+      //console.log(`lastSlash: ${lastSlash}`)
+
+      let name = thisFile.slice(8, lastPart)
+      //console.log(`name: ${name}`)
+
+      name = name.slice(lastSlash)
 
       // Delete the cached copy of the wallet. This allows testing of list-wallets.
-      delete require.cache[require.resolve(`../../${thisFile}`)]
+      delete require.cache[require.resolve(`${thisFile}`)]
 
-      const walletInfo = require(`../../${thisFile}`)
+      const walletInfo = require(`${thisFile}`)
 
       retData.push([name, walletInfo.network, walletInfo.balance])
     }

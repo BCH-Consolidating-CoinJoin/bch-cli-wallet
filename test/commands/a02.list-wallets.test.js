@@ -41,7 +41,7 @@ describe("list-wallets", () => {
     const data = listWallets.parseWallets()
 
     // Find the wallet that was just created.
-    const testWallet = data.find(wallet => wallet[0] === "test123")
+    const testWallet = data.find(wallet => wallet[0].indexOf("test123") > -1)
 
     const network = testWallet[1]
     const balance = testWallet[2]
@@ -62,9 +62,11 @@ describe("list-wallets", () => {
 
     const listWallets = new ListWallets()
     const data = listWallets.parseWallets()
+    //console.log(`data: ${util.inspect(data)}`)
 
     // Find the wallet that was just created.
-    const testWallet = data.find(wallet => wallet[0] === "test123")
+    const testWallet = data.find(wallet => wallet[0].indexOf("test123") > -1)
+    //console.log(`testWallet: ${util.inspect(testWallet)}`)
 
     const network = testWallet[1]
     const balance = testWallet[2]
