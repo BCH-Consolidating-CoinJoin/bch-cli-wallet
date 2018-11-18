@@ -39,9 +39,17 @@ class ListWallets extends Command {
     // Loop through each wallet returned.
     for (let i = 0; i < fileList.length; i++) {
       const thisFile = fileList[i]
+      //console.log(`thisFile: ${thisFile}`)
 
       const lastPart = thisFile.indexOf(`.json`)
-      const name = thisFile.slice(8, lastPart)
+
+      const lastSlash = thisFile.indexOf(`wallets/`)
+      //console.log(`lastSlash: ${lastSlash}`)
+
+      let name = thisFile.slice(8, lastPart)
+      //console.log(`name: ${name}`)
+
+      name = name.slice(lastSlash)
 
       // Delete the cached copy of the wallet. This allows testing of list-wallets.
       delete require.cache[require.resolve(`${thisFile}`)]
