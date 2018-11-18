@@ -71,7 +71,7 @@ class CoinJoin extends Command {
 
       // Get all UTXOs controlled by this wallet.
       const utxos = await appUtil.getUTXOs(walletInfo, BITBOX)
-      console.log(`utxos: ${util.inspect(utxos)}`)
+      //console.log(`utxos: ${util.inspect(utxos)}`)
 
       await this.submitToCoinJoin(walletInfo, utxos, BITBOX, server, filename)
 
