@@ -4,8 +4,6 @@ bch-cli-wallet
 This is a prototype Bitcoin Cash (BCH) wallet that runs on the command line. This
 project has the following goals:
 - Create a code base for a wallet that is easily forkable and extensible by JavaScript developers.
-- Code an HD wallet that follows [these privacy best practices](http://bitcoinism.blogspot.com/2013/07/reclaiming-financial-privacy-with-hd.html)
-- Include an interface for a [Consolidating CoinJoin server](https://github.com/christroutner/consolidating-coinjoin)
 
 If you want a wallet with a graphical user interface, check out
 [Badger Wallet](http://badgerwallet.cash/). BCH functionality is
@@ -41,35 +39,15 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`bch-cli-wallet coinjoin`](#bch-cli-wallet-coinjoin)
 * [`bch-cli-wallet create-wallet`](#bch-cli-wallet-create-wallet)
 * [`bch-cli-wallet get-address`](#bch-cli-wallet-get-address)
 * [`bch-cli-wallet hello`](#bch-cli-wallet-hello)
 * [`bch-cli-wallet help [COMMAND]`](#bch-cli-wallet-help-command)
 * [`bch-cli-wallet list-wallets`](#bch-cli-wallet-list-wallets)
+* [`bch-cli-wallet remove-wallet`](#bch-cli-wallet-remove-wallet)
 * [`bch-cli-wallet send`](#bch-cli-wallet-send)
 * [`bch-cli-wallet send-all`](#bch-cli-wallet-send-all)
 * [`bch-cli-wallet update-balances`](#bch-cli-wallet-update-balances)
-
-## `bch-cli-wallet coinjoin`
-
-Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
-
-```
-USAGE
-  $ bch-cli-wallet coinjoin
-
-OPTIONS
-  -n, --name=name      Name of wallet
-  -s, --server=server  Consolidating CoinJoin Server URL
-
-DESCRIPTION
-  Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
-  When the CoinJoin is complete, standardized amounts of BCH
-  will be sent back to this wallet.
-```
-
-_See code: [src/commands/coinjoin.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/coinjoin.js)_
 
 ## `bch-cli-wallet create-wallet`
 
@@ -146,6 +124,20 @@ USAGE
 
 _See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/list-wallets.js)_
 
+## `bch-cli-wallet remove-wallet`
+
+Remove an existing wallet.
+
+```
+USAGE
+  $ bch-cli-wallet remove-wallet
+
+OPTIONS
+  -n, --name=name  Name of wallet
+```
+
+_See code: [src/commands/remove-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/remove-wallet.js)_
+
 ## `bch-cli-wallet send`
 
 Send an amount of BCH
@@ -197,5 +189,4 @@ OPTIONS
 ```
 
 _See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
-
 <!-- commandsstop -->
