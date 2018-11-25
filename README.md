@@ -1,21 +1,14 @@
-bch-cli-wallet
+ccoinjoin-wallet
 ========
+`ccoinjoin-wallet` is a fork of [`bch-cli-wallet`](https://github.com/christroutner/bch-cli-wallet) that implements the [Consolidating CoinJoin](https://gist.github.com/christroutner/457b99b8033fdea5ae565687e6360323) protocol. To see a demo, and learn more about Bitcoin privacy, [watch this YouTube video](https://www.youtube.com/watch?v=LqqRR4Kfr-M).
 
-This is a prototype Bitcoin Cash (BCH) wallet that runs on the command line. This
-project has the following goals:
-- Create a code base for a wallet that is easily forkable and extensible by JavaScript developers.
+This wallet is under active development, as the Consolidating CoinJoin implementation moves to a peer-to-peer model.
 
-If you want a wallet with a graphical user interface, check out
-[Badger Wallet](http://badgerwallet.cash/). BCH functionality is
-implemented in both wallets with [BITBOX](https://developer.bitcoin.com/bitbox), and the command
-line interface for this project is built with [oclif](https://oclif.io).
+[![Greenkeeper badge](https://badges.greenkeeper.io/BCH-Consolidating-CoinJoin/ccoinjoin-wallet.svg)](https://greenkeeper.io/)
 
+[![Build Status](https://travis-ci.org/BCH-Consolidating-CoinJoin/ccoinjoin-wallet.svg?branch=master)](https://travis-ci.org/BCH-Consolidating-CoinJoin/ccoinjoin-wallet)
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/christroutner/bch-cli-wallet.svg)](https://greenkeeper.io/)
-
-[![Build Status](https://travis-ci.org/christroutner/bch-cli-wallet.svg?branch=master)](https://travis-ci.org/christroutner/bch-cli-wallet)
-
-[![Coverage Status](https://coveralls.io/repos/github/christroutner/bch-cli-wallet/badge.svg?branch=unstable)](https://coveralls.io/github/christroutner/bch-cli-wallet?branch=unstable)
+[![Coverage Status](https://coveralls.io/repos/github/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/badge.svg?branch=unstable)](https://coveralls.io/github/BCH-Consolidating-CoinJoin/ccoinjoin-wallet?branch=unstable)
 
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
