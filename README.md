@@ -8,7 +8,7 @@ project has the following goals:
 If you want a wallet with a graphical user interface, check out
 [Badger Wallet](http://badgerwallet.cash/). BCH functionality is
 implemented in both wallets with [BITBOX](https://developer.bitcoin.com/bitbox), and the command
-line interface for this project is built with [oclif](https://oclif.io)
+line interface for this project is built with [oclif](https://oclif.io).
 
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/christroutner/bch-cli-wallet.svg)](https://greenkeeper.io/)
