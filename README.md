@@ -26,65 +26,98 @@ line interface for this project is built with [oclif](https://oclif.io).
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g bch-cli-wallet
-$ bch-cli-wallet COMMAND
+$ npm install -g ccoinjoin-wallet
+$ ccoinjoin-wallet COMMAND
 running command...
-$ bch-cli-wallet (-v|--version|version)
-bch-cli-wallet/1.0.1 linux-x64 node-v10.11.0
-$ bch-cli-wallet --help [COMMAND]
+$ ccoinjoin-wallet (-v|--version|version)
+ccoinjoin-wallet/1.0.0 linux-x64 node-v10.11.0
+$ ccoinjoin-wallet --help [COMMAND]
 USAGE
-  $ bch-cli-wallet COMMAND
+  $ ccoinjoin-wallet COMMAND
 ...
 ```
 <!-- usagestop -->
 # Commands
 <!-- commands -->
-* [`bch-cli-wallet create-wallet`](#bch-cli-wallet-create-wallet)
-* [`bch-cli-wallet get-address`](#bch-cli-wallet-get-address)
-* [`bch-cli-wallet hello`](#bch-cli-wallet-hello)
-* [`bch-cli-wallet help [COMMAND]`](#bch-cli-wallet-help-command)
-* [`bch-cli-wallet list-wallets`](#bch-cli-wallet-list-wallets)
-* [`bch-cli-wallet remove-wallet`](#bch-cli-wallet-remove-wallet)
-* [`bch-cli-wallet send`](#bch-cli-wallet-send)
-* [`bch-cli-wallet send-all`](#bch-cli-wallet-send-all)
-* [`bch-cli-wallet update-balances`](#bch-cli-wallet-update-balances)
+* [`ccoinjoin-wallet coinjoin`](#ccoinjoin-wallet-coinjoin)
+* [`ccoinjoin-wallet create-wallet`](#ccoinjoin-wallet-create-wallet)
+* [`ccoinjoin-wallet find-coinjoin`](#ccoinjoin-wallet-find-coinjoin)
+* [`ccoinjoin-wallet get-address`](#ccoinjoin-wallet-get-address)
+* [`ccoinjoin-wallet hello`](#ccoinjoin-wallet-hello)
+* [`ccoinjoin-wallet help [COMMAND]`](#ccoinjoin-wallet-help-command)
+* [`ccoinjoin-wallet list-wallets`](#ccoinjoin-wallet-list-wallets)
+* [`ccoinjoin-wallet remove-wallet`](#ccoinjoin-wallet-remove-wallet)
+* [`ccoinjoin-wallet send`](#ccoinjoin-wallet-send)
+* [`ccoinjoin-wallet send-all`](#ccoinjoin-wallet-send-all)
+* [`ccoinjoin-wallet update-balances`](#ccoinjoin-wallet-update-balances)
 
-## `bch-cli-wallet create-wallet`
+## `ccoinjoin-wallet coinjoin`
+
+Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
+
+```
+USAGE
+  $ ccoinjoin-wallet coinjoin
+
+OPTIONS
+  -n, --name=name      Name of wallet
+  -s, --server=server  Consolidating CoinJoin Server URL
+
+DESCRIPTION
+  Send all BCH in a wallet to a Consolidating CoinJoin server to anonymize it.
+  When the CoinJoin is complete, standardized amounts of BCH
+  will be sent back to this wallet.
+```
+
+_See code: [src/commands/coinjoin.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/coinjoin.js)_
+
+## `ccoinjoin-wallet create-wallet`
 
 Generate a new HD Wallet.
 
 ```
 USAGE
-  $ bch-cli-wallet create-wallet
+  $ ccoinjoin-wallet create-wallet
 
 OPTIONS
   -n, --name=name  Name of wallet
   -t, --testnet    Create a testnet wallet
 ```
 
-_See code: [src/commands/create-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/create-wallet.js)_
+_See code: [src/commands/create-wallet.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/create-wallet.js)_
 
-## `bch-cli-wallet get-address`
+## `ccoinjoin-wallet find-coinjoin`
+
+List existing wallets.
+
+```
+USAGE
+  $ ccoinjoin-wallet find-coinjoin
+```
+
+_See code: [src/commands/find-coinjoin.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/find-coinjoin.js)_
+
+## `ccoinjoin-wallet get-address`
 
 Generate a new address to recieve BCH.
 
 ```
 USAGE
-  $ bch-cli-wallet get-address
+  $ ccoinjoin-wallet get-address
 
 OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/get-address.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/get-address.js)_
+_See code: [src/commands/get-address.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/get-address.js)_
 
-## `bch-cli-wallet hello`
+## `ccoinjoin-wallet hello`
 
 Example command from oclif
 
 ```
 USAGE
-  $ bch-cli-wallet hello
+  $ ccoinjoin-wallet hello
 
 OPTIONS
   -n, --name=name  name to print
@@ -94,15 +127,15 @@ DESCRIPTION
   Leaving it here for future reference in development.
 ```
 
-_See code: [src/commands/hello.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/hello.js)_
+_See code: [src/commands/hello.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/hello.js)_
 
-## `bch-cli-wallet help [COMMAND]`
+## `ccoinjoin-wallet help [COMMAND]`
 
-display help for bch-cli-wallet
+display help for ccoinjoin-wallet
 
 ```
 USAGE
-  $ bch-cli-wallet help [COMMAND]
+  $ ccoinjoin-wallet help [COMMAND]
 
 ARGUMENTS
   COMMAND  command to show help for
@@ -113,38 +146,38 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
 
-## `bch-cli-wallet list-wallets`
+## `ccoinjoin-wallet list-wallets`
 
 List existing wallets.
 
 ```
 USAGE
-  $ bch-cli-wallet list-wallets
+  $ ccoinjoin-wallet list-wallets
 ```
 
-_See code: [src/commands/list-wallets.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/list-wallets.js)_
+_See code: [src/commands/list-wallets.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/list-wallets.js)_
 
-## `bch-cli-wallet remove-wallet`
+## `ccoinjoin-wallet remove-wallet`
 
 Remove an existing wallet.
 
 ```
 USAGE
-  $ bch-cli-wallet remove-wallet
+  $ ccoinjoin-wallet remove-wallet
 
 OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/remove-wallet.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/remove-wallet.js)_
+_See code: [src/commands/remove-wallet.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/remove-wallet.js)_
 
-## `bch-cli-wallet send`
+## `ccoinjoin-wallet send`
 
 Send an amount of BCH
 
 ```
 USAGE
-  $ bch-cli-wallet send
+  $ ccoinjoin-wallet send
 
 OPTIONS
   -a, --sendAddr=sendAddr  Cash address to send to
@@ -152,15 +185,15 @@ OPTIONS
   -n, --name=name          Name of wallet
 ```
 
-_See code: [src/commands/send.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send.js)_
+_See code: [src/commands/send.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/send.js)_
 
-## `bch-cli-wallet send-all`
+## `ccoinjoin-wallet send-all`
 
 Send all BCH in a wallet to another address. **Degrades Privacy**
 
 ```
 USAGE
-  $ bch-cli-wallet send-all
+  $ ccoinjoin-wallet send-all
 
 OPTIONS
   -a, --sendAddr=sendAddr  Cash address to send to
@@ -174,19 +207,19 @@ DESCRIPTION
   https://bit.ly/2TnhdVc
 ```
 
-_See code: [src/commands/send-all.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/send-all.js)_
+_See code: [src/commands/send-all.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/send-all.js)_
 
-## `bch-cli-wallet update-balances`
+## `ccoinjoin-wallet update-balances`
 
 Poll the network and update the balances of the wallet.
 
 ```
 USAGE
-  $ bch-cli-wallet update-balances
+  $ ccoinjoin-wallet update-balances
 
 OPTIONS
   -n, --name=name  Name of wallet
 ```
 
-_See code: [src/commands/update-balances.js](https://github.com/christroutner/bch-cli-wallet/blob/v1.0.1/src/commands/update-balances.js)_
+_See code: [src/commands/update-balances.js](https://github.com/BCH-Consolidating-CoinJoin/ccoinjoin-wallet/blob/v1.0.0/src/commands/update-balances.js)_
 <!-- commandsstop -->
