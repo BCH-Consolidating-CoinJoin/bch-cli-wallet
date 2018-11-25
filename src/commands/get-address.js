@@ -6,6 +6,7 @@
 
 const BB = require("bitbox-sdk/lib/bitbox-sdk").default
 const appUtil = require("../util")
+const qrcode = require("qrcode-terminal")
 
 const { Command, flags } = require("@oclif/command")
 
@@ -26,6 +27,9 @@ class GetAddress extends Command {
       const filename = `${__dirname}/../../wallets/${flags.name}.json`
 
       const newAddress = await this.getAddress(filename, BITBOX)
+
+      // Display the address as a QR code.
+      qrcode.generate(newAddress, { small: true })
 
       // Display the address to the user.
       this.log(`${newAddress}`)
