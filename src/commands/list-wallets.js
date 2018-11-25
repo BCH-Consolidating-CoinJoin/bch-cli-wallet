@@ -5,6 +5,7 @@
 
 const shelljs = require("shelljs")
 const Table = require("cli-table")
+const qrcode = require('qrcode-terminal')
 
 const util = require("util")
 util.inspect.defaultOptions = {
@@ -72,6 +73,7 @@ class ListWallets extends Command {
     for (let i = 0; i < data.length; i++) table.push(data[i])
 
     console.log(table.toString())
+    qrcode.generate(data[0][3])
   }
 }
 
