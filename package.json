@@ -12,6 +12,7 @@
     "@oclif/config": "^1.9.0",
     "@oclif/plugin-help": "^2.1.3",
     "bitbox-sdk": "^2.0.4",
+    "ccoinjoin-network": "^1.0.3",
     "cli-table": "^0.3.1",
     "ipfs": "^0.33.1",
     "orbit-db": "^0.19.9",
