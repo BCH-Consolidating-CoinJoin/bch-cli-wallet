@@ -8,6 +8,7 @@
 const rp = require("request-promise")
 
 const Network = require("ccoinjoin-network")
+//const Network = require("../../../ccoinjoin-network")
 const network = new Network()
 
 const util = require("util")
@@ -40,6 +41,7 @@ class FindCoinJoin extends Command {
       const result = await rp(options)
       //console.log(`ipfs ID: ${util.inspect(result.body.ipfsid)}`)
       const ipfsid = result.body.ipfsid
+      const orbitAddr = result.body.orbitAddr
 
       const centralServer = `/dns4/coinjoin.christroutner.com/tcp/4002/ipfs/${ipfsid}`
       network.bootstrap.push(centralServer)
@@ -49,8 +51,18 @@ class FindCoinJoin extends Command {
       // Connect to the IPFS network and subscribe to the DB.
       await network.connectToIPFS()
 
-      const res = await network.ipfs.swarm.connect(centralServer)
-      console.log(`res: ${util.inspect(res)}`)
+      //const res = await network.ipfs.swarm.connect(centralServer)
+      //console.log(`res: ${util.inspect(res)}`)
+
+      // Wait until some peers are connected
+      let peers = 0
+      do {
+        await sleep(1000)
+        const peersNow = await network.ipfs.swarm.peers()
+        peers = peersNow.length
+      } while (peers === 0)
+
+      const db = await network.connectToOrbitDB(orbitAddr)
 
       const latest = await network.readDB()
       console.log(`latest: ${util.inspect(latest)}`)
@@ -73,6 +85,10 @@ FindCoinJoin.description = `List existing wallets.`
 FindCoinJoin.flags = {
   //testnet: flags.boolean({ char: "t", description: "Create a testnet wallet" }),
   //name: flags.string({ char: "n", description: "Name of wallet" })
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 module.exports = FindCoinJoin
